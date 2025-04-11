@@ -42,9 +42,9 @@ export const verifyOTP = async (req: Request, res: Response) => {
   
       if(user){
         // Check OTP validity
-    //   if (user.otp !== otp || new Date() > user.otpExpires) {
-    //      res.status(400).json({ message: "Invalid or expired OTP" });
-    //   }
+      if (user.otp !== otp || new Date() > user.otpExpires) {
+         res.status(400).json({ message: "Invalid or expired OTP" });
+      }
   
       // Mark user as verified
       user.isVerified = true;
