@@ -38,11 +38,12 @@ export const verifyOTP = async (req: Request, res: Response) => {
   
       // Find user
       const user = await User.findOne({ email });
-      if (!user) return res.status(400).json({ message: "User not found" });
+      if (!user) res.status(400).json({ message: "User not found" });
   
-      // Check OTP validity
+      if(user){
+        // Check OTP validity
     //   if (user.otp !== otp || new Date() > user.otpExpires) {
-    //     return res.status(400).json({ message: "Invalid or expired OTP" });
+    //      res.status(400).json({ message: "Invalid or expired OTP" });
     //   }
   
       // Mark user as verified
@@ -50,6 +51,7 @@ export const verifyOTP = async (req: Request, res: Response) => {
       user.otp = null;
       user.otpExpires = null;
       await user.save();
+      }
   
       res.status(200).json({ message: "Signup successful. You can now login." });
     } catch (error) {
