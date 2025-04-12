@@ -3,14 +3,19 @@ import bcrypt from "bcryptjs";
 import { User } from "../models/user.model";
 import { generateOTP } from "../utils/otp.util";
 import { sendOTP } from "../services/email.service";
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+dotenv.config();
 
+// This controller handles user signup and OTP verification and Login
+// It includes two main functions: signup and verifyOTP
 export const signup = async (req: Request, res: Response) => {
   try {
     const { email, password, name } = req.body;
 
     // Check if user exists
     const existingUser = await User.findOne({ email });
-    if (existingUser) res.status(400).json({ message: "Email already in use" });
+    if (existingUser) res.status(400).json({ message: "Email already in use", success: false });
 
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -20,15 +25,15 @@ export const signup = async (req: Request, res: Response) => {
     const otpExpires = new Date(Date.now() + 5 * 60 * 1000); // OTP expires in 5 mins
 
     // Save user with OTP
-    const newUser = new User({ email,name, password: hashedPassword, otp, otpExpires });
+    const newUser = new User({ email, name, password: hashedPassword, otp, otpExpires });
     await newUser.save();
 
     // Send OTP via email
     await sendOTP(email, otp);
 
-    res.status(200).json({ message: "OTP sent. Verify to complete signup." });
+    res.status(200).json({ message: "OTP sent. Verify to complete signup.", success: true, data: newUser });
   } catch (error) {
-    res.status(500).json({ message: "Server error", error });
+    res.status(500).json({ message: "Server error", seccess: false, error });
   }
 };
 
@@ -38,12 +43,12 @@ export const verifyOTP = async (req: Request, res: Response) => {
 
     // Find user
     const user = await User.findOne({ email });
-    if (!user) res.status(400).json({ message: "User not found" });
+    if (!user) res.status(400).json({ message: "User not found", success: false });
 
     if (user) {
       // Check OTP validity
       if (user.otp !== otp || !user.otpExpires || new Date() > user.otpExpires) {
-        res.status(400).json({ message: "Invalid or expired OTP" });
+        res.status(400).json({ message: "Invalid or expired OTP", seccess: false });
       }
 
       // Mark user as verified
@@ -53,9 +58,65 @@ export const verifyOTP = async (req: Request, res: Response) => {
       await user.save();
     }
 
-    res.status(200).json({ message: "Signup successful. You can now login." });
+    res.status(200).json({ message: "Signup successful. You can now login.", success: true });
   } catch (error) {
-    res.status(500).json({ message: "Server error", error });
+    res.status(500).json({ success: false, message: "Server error", error });
   }
 };
 
+// This Controller is about Loggin with email
+export const loginWithEmail = async (req: Request, res: Response): Promise<Response> => {
+  const { email, password } = req.body;
+  
+  // Check email and password is not falsy
+  if (!email || !password) {
+    res.status(400).json({
+      message: 'Email and password are required.',
+      success: false,
+      error: 'Missing credentials',
+    });
+  }
+
+  try {
+    const user = await User.findOne({ email }); // Replace with your ORM query
+
+    if (!user) {
+      return res.status(401).json({
+        message: 'Invalid credentials.',
+        success: false,
+        error: 'User not found',
+      });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      res.status(401).json({
+        message: 'Invalid credentials.',
+        success: false,
+        error: 'Incorrect password',
+      });
+    }
+
+    const token = jwt.sign({ id: user._id }, "lskd", { expiresIn: '1d' });
+
+    return res.status(200).json({
+      message: 'Logged in successfully.',
+      success: true,
+      data: {
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+        },
+        token,
+      },
+    });
+
+  } catch (err: any) {
+    return res.status(500).json({
+      message: 'Login failed.',
+      success: false,
+      error: err.message,
+    });
+  }
+};
