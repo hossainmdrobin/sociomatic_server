@@ -6,7 +6,7 @@ import { sendOTP } from "../services/email.service";
 
 export const signup = async (req: Request, res: Response) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, name } = req.body;
 
     // Check if user exists
     const existingUser = await User.findOne({ email });
@@ -20,7 +20,7 @@ export const signup = async (req: Request, res: Response) => {
     const otpExpires = new Date(Date.now() + 5 * 60 * 1000); // OTP expires in 5 mins
 
     // Save user with OTP
-    const newUser = new User({ email, password: hashedPassword, otp, otpExpires });
+    const newUser = new User({ email,name, password: hashedPassword, otp, otpExpires });
     await newUser.save();
 
     // Send OTP via email
@@ -33,29 +33,29 @@ export const signup = async (req: Request, res: Response) => {
 };
 
 export const verifyOTP = async (req: Request, res: Response) => {
-    try {
-      const { email, otp } = req.body;
-  
-      // Find user
-      const user = await User.findOne({ email });
-      if (!user) res.status(400).json({ message: "User not found" });
-  
-      if(user){
-        // Check OTP validity
-      if (user.otp !== otp || new Date() > user.otpExpires) {
-         res.status(400).json({ message: "Invalid or expired OTP" });
+  try {
+    const { email, otp } = req.body;
+
+    // Find user
+    const user = await User.findOne({ email });
+    if (!user) res.status(400).json({ message: "User not found" });
+
+    if (user) {
+      // Check OTP validity
+      if (user.otp !== otp || !user.otpExpires || new Date() > user.otpExpires) {
+        res.status(400).json({ message: "Invalid or expired OTP" });
       }
-  
+
       // Mark user as verified
       user.isVerified = true;
       user.otp = null;
       user.otpExpires = null;
       await user.save();
-      }
-  
-      res.status(200).json({ message: "Signup successful. You can now login." });
-    } catch (error) {
-      res.status(500).json({ message: "Server error", error });
     }
-  };
-  
+
+    res.status(200).json({ message: "Signup successful. You can now login." });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
