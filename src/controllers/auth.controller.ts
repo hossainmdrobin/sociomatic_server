@@ -9,9 +9,10 @@ dotenv.config();
 
 // This controller handles user signup and OTP verification and Login
 // It includes two main functions: signup and verifyOTP
-export const signup = async (req: Request, res: Response) => {
+export const signup = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password, name } = req.body;
+    console.log(email)
 
     // Check if user exists
     const existingUser = await User.findOne({ email });
@@ -30,8 +31,8 @@ export const signup = async (req: Request, res: Response) => {
 
     // Send OTP via email
     await sendOTP(email, otp);
-
     res.status(200).json({ message: "OTP sent. Verify to complete signup.", success: true, data: newUser });
+    
   } catch (error) {
     res.status(500).json({ message: "Server error", seccess: false, error });
   }
@@ -65,9 +66,9 @@ export const verifyOTP = async (req: Request, res: Response) => {
 };
 
 // This Controller is about Loggin with email
-export const loginWithEmail = async (req: Request, res: Response): Promise<Response> => {
+export const loginWithEmail = async (req: Request, res: Response) => {
   const { email, password } = req.body;
-  
+
   // Check email and password is not falsy
   if (!email || !password) {
     res.status(400).json({
@@ -81,39 +82,41 @@ export const loginWithEmail = async (req: Request, res: Response): Promise<Respo
     const user = await User.findOne({ email }); // Replace with your ORM query
 
     if (!user) {
-      return res.status(401).json({
+      res.status(401).json({
         message: 'Invalid credentials.',
         success: false,
         error: 'User not found',
       });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      res.status(401).json({
-        message: 'Invalid credentials.',
-        success: false,
-        error: 'Incorrect password',
+    if (user) {
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        res.status(401).json({
+          message: 'Invalid credentials.',
+          success: false,
+          error: 'Incorrect password',
+        });
+      }
+
+      const token = jwt.sign({ id: user._id }, "lskd", { expiresIn: '1d' });
+
+      res.status(200).json({
+        message: 'Logged in successfully.',
+        success: true,
+        data: {
+          user: {
+            id: user._id,
+            name: user.name,
+            email: user.email,
+          },
+          token,
+        },
       });
     }
 
-    const token = jwt.sign({ id: user._id }, "lskd", { expiresIn: '1d' });
-
-    return res.status(200).json({
-      message: 'Logged in successfully.',
-      success: true,
-      data: {
-        user: {
-          id: user._id,
-          name: user.name,
-          email: user.email,
-        },
-        token,
-      },
-    });
-
   } catch (err: any) {
-    return res.status(500).json({
+    res.status(500).json({
       message: 'Login failed.',
       success: false,
       error: err.message,
