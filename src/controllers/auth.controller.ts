@@ -16,13 +16,17 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
 
     // Check if user exists
     const existingUser = await User.findOne({ email });
-    if (existingUser) res.status(400).json({ message: "Email already in use", success: false });
+    if (existingUser) {
+      res.status(400).json({ message: "Email already in use", success: false });
+      return
+    }
 
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Generate OTP
-    const otp = generateOTP();
+    const otp = generateOTP(); 
+    console.log(otp)
     const otpExpires = new Date(Date.now() + 5 * 60 * 1000); // OTP expires in 5 mins
 
     // Save user with OTP
@@ -32,7 +36,7 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
     // Send OTP via email
     await sendOTP(email, otp);
     res.status(200).json({ message: "OTP sent. Verify to complete signup.", success: true, data: newUser });
-    
+
   } catch (error) {
     res.status(500).json({ message: "Server error", seccess: false, error });
   }

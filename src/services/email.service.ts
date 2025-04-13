@@ -2,7 +2,6 @@ import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 
 dotenv.config();
-
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -12,12 +11,20 @@ const transporter = nodemailer.createTransport({
 });
 
 export const sendOTP = async (email: string, otp: number) => {
+  console.log(process.env.EMAIL_USER, process.env.EMAIL_PASS)
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: email,
-    subject: "Your OTP Code",
-    text: `Your OTP code is ${otp}. It expires in 5 minutes.`,
+    subject: "Your Sociomatic OTP Code",
+    text: `Your Sociomatic OTP code is ${otp}. It expires in 5 minutes.`,
   };
 
-  await transporter.sendMail(mailOptions);
+  // await transporter.sendMail(mailOptions);
+  transporter.sendMail(mailOptions, function(error, info){
+    if (error) {
+      console.log(error);
+    } else {
+      console.log('Email sent: ' + info.response);
+    }
+  });
 };
