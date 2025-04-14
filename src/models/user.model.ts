@@ -7,6 +7,8 @@ const userSchema = new mongoose.Schema({
   otp: { type: Number, required: false },
   otpExpires: { type: Date, required: false },
   isVerified: { type: Boolean, default: false },
+},{
+  timestamps: true
 });
 
 export const User = mongoose.model("User", userSchema);

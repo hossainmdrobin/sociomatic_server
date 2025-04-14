@@ -87,7 +87,7 @@ export const loginWithEmail = async (req: Request, res: Response) => {
 
     if (!user) {
       res.status(401).json({
-        message: 'Invalid credentials.',
+        message: 'You are not signed up. Please signup first.',
         success: false,
         error: 'User not found',
       });
