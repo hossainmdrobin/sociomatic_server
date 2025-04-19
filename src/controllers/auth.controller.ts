@@ -12,7 +12,6 @@ dotenv.config();
 export const signup = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password, name } = req.body;
-    console.log('email', req.body.email)
 
     // Check if user exists
     const existingUser = await User.findOne({ email });
@@ -26,8 +25,7 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
 
     // Generate OTP
     const otp = generateOTP(); 
-    console.log(otp)
-    const otpExpires = new Date(Date.now() + 5 * 60 * 1000); // OTP expires in 5 mins
+    const otpExpires = new Date(Date.now() + 30 * 60 * 1000); // OTP expires in 5 mins
 
     // Save user with OTP
     const newUser = new User({ email, name, password: hashedPassword, otp, otpExpires });
@@ -48,12 +46,16 @@ export const verifyOTP = async (req: Request, res: Response) => {
 
     // Find user
     const user = await User.findOne({ email });
-    if (!user) res.status(400).json({ message: "User not found", success: false });
+    if (!user) {
+      res.status(400).json({ message: "User not found", success: false });
+      return; 
+    }
 
     if (user) {
       // Check OTP validity
-      if (user.otp !== otp || !user.otpExpires || new Date() > user.otpExpires) {
+      if (user.otp != otp || !user.otpExpires || new Date() > user.otpExpires) {
         res.status(400).json({ message: "Invalid or expired OTP", seccess: false });
+        return;
       }
 
       // Mark user as verified
@@ -64,6 +66,7 @@ export const verifyOTP = async (req: Request, res: Response) => {
     }
 
     res.status(200).json({ message: "Signup successful. You can now login.", success: true });
+    return;
   } catch (error) {
     res.status(500).json({ success: false, message: "Server error", error });
   }
