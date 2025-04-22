@@ -4,12 +4,14 @@ import authRoutes from './routes/auth.routes'
 import { connectDB } from "./dataBase/connection";
 import cors from "cors";
 import morgan from "morgan";
-
+import cookieParser from "cookie-parser";
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 app.use(express.json());
 app.use(cors())
 app.use(morgan("dev"));
@@ -24,3 +26,4 @@ connectDB()
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+

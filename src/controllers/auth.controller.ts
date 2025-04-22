@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import { User } from "../models/user.model";
-import { generateOTP } from "../utils/otp.util";
+import { generateOTP, generateTokens } from "../utils/auth.util";
 import { sendOTP } from "../services/email.service";
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
@@ -24,7 +24,8 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Generate OTP
-    const otp = generateOTP(); 
+    const otp = generateOTP();
+    console.log(otp)
     const otpExpires = new Date(Date.now() + 30 * 60 * 1000); // OTP expires in 5 mins
 
     // Save user with OTP
@@ -48,7 +49,7 @@ export const verifyOTP = async (req: Request, res: Response) => {
     const user = await User.findOne({ email });
     if (!user) {
       res.status(400).json({ message: "User not found", success: false });
-      return; 
+      return;
     }
 
     if (user) {
@@ -106,19 +107,25 @@ export const loginWithEmail = async (req: Request, res: Response) => {
         });
       }
 
-      const token = jwt.sign({ id: user._id }, "lskd", { expiresIn: '1d' });
+      const { accessToken, refreshToken } = generateTokens(user);
+      res.cookie("accessToken", accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production", // set true in production
+        sameSite: "none",
+        maxAge: 15 * 60 * 1000,
+      });
+
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production", // set true in production
+        sameSite: "none",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      });
 
       res.status(200).json({
         message: 'Logged in successfully.',
         success: true,
-        data: {
-          user: {
-            id: user._id,
-            name: user.name,
-            email: user.email,
-          },
-          token,
-        },
+        data: {},
       });
     }
 
