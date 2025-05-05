@@ -7,6 +7,10 @@ const userSchema = new mongoose.Schema({
   otp: { type: Number, required: false },
   otpExpires: { type: Date, required: false },
   isVerified: { type: Boolean, default: false },
+  accounts:[{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Account"
+  }]
 },{
   timestamps: true
 });

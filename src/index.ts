@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 import dotenv from "dotenv";
 import authRoutes from './routes/auth.routes'
+import accountRoutes from './routes/accounts/accouts.routes'
 import { connectDB } from "./dataBase/connection";
 import cors from "cors";
 import morgan from "morgan";
@@ -15,6 +16,7 @@ app.use(cors())
 app.use(morgan("dev"));
 
 app.use("/api/auth", authRoutes);
+app.use("api/accounts", accountRoutes);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Server is running...");
