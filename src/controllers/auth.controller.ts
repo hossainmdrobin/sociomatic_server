@@ -25,6 +25,7 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
 
     // Generate OTP
     const otp = generateOTP(); 
+    console.log("Generated OTP:", otp); // Log the generated OTP for debugging
     const otpExpires = new Date(Date.now() + 30 * 60 * 1000); // OTP expires in 5 mins
 
     // Save user with OTP
@@ -106,7 +107,7 @@ export const loginWithEmail = async (req: Request, res: Response) => {
         });
       }
 
-      const token = jwt.sign({ id: user._id }, "lskd", { expiresIn: '1d' });
+      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET || "", { expiresIn: '1d' });
 
       res.status(200).json({
         message: 'Logged in successfully.',

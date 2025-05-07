@@ -16,7 +16,7 @@ app.use(cors())
 app.use(morgan("dev"));
 
 app.use("/api/auth", authRoutes);
-app.use("api/accounts", accountRoutes);
+app.use("/api/accounts", accountRoutes);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Server is running...");
