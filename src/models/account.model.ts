@@ -8,7 +8,7 @@ const accountSchema = new mongoose.Schema({
   token: { type: String, required: false },
   accountType: { type: String, required: true },
   tokenExpires: { type: Date, required: false },
-  addedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  addedBy: { type: mongoose.Schema.Types.ObjectId, ref: "Admin", required: true },
 }, {
   timestamps: true
 });

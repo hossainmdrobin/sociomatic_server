@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
-import { User } from "../models/user.model";
+import { Admin } from "../models/user.model";
 import { generateOTP } from "../utils/otp.util";
 import { sendOTP } from "../services/email.service";
 import jwt from 'jsonwebtoken';
@@ -14,7 +14,7 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
     const { email, password, name } = req.body;
 
     // Check if user exists
-    const existingUser = await User.findOne({ email });
+    const existingUser = await Admin.findOne({ email });
     if (existingUser) {
       res.status(400).json({ message: "Email already in use", success: false });
       return
@@ -29,7 +29,7 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
     const otpExpires = new Date(Date.now() + 30 * 60 * 1000); // OTP expires in 5 mins
 
     // Save user with OTP
-    const newUser = new User({ email, name, password: hashedPassword, otp, otpExpires });
+    const newUser = new Admin({ email, name, password: hashedPassword, otp, otpExpires });
     await newUser.save();
 
     // Send OTP via email
@@ -46,7 +46,7 @@ export const verifyOTP = async (req: Request, res: Response) => {
     const { email, otp } = req.body;
 
     // Find user
-    const user = await User.findOne({ email });
+    const user = await Admin.findOne({ email });
     if (!user) {
       res.status(400).json({ message: "User not found", success: false });
       return; 
@@ -87,7 +87,7 @@ export const loginWithEmail = async (req: Request, res: Response) => {
   }
 
   try {
-    const user = await User.findOne({ email }); // Replace with your ORM query
+    const user = await Admin.findOne({ email }); // Replace with your ORM query
 
     if (!user) {
       res.status(401).json({
@@ -107,7 +107,7 @@ export const loginWithEmail = async (req: Request, res: Response) => {
         });
       }
 
-      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET || "", { expiresIn: '1d' });
+      const token = jwt.sign({ _id: user._id,email:user.email }, process.env.JWT_SECRET || "", { expiresIn: '1d' });
 
       res.status(200).json({
         message: 'Logged in successfully.',
