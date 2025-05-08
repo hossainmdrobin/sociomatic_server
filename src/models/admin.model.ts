@@ -7,6 +7,7 @@ const adminSchema = new mongoose.Schema({
   otp: { type: Number, required: false },
   otpExpires: { type: Date, required: false },
   isVerified: { type: Boolean, default: false },
+  roll:{ type: String, enum: ["admin", "user"], default: "admin" },
   accounts:[{
     type: mongoose.Schema.Types.ObjectId,
     ref: "Account"

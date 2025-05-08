@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
-import { Admin } from "../models/user.model";
+import { Admin } from "../models/admin.model";
 import { generateOTP } from "../utils/otp.util";
 import { sendOTP } from "../services/email.service";
 import jwt from 'jsonwebtoken';
@@ -24,7 +24,7 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Generate OTP
-    const otp = generateOTP(); 
+    const otp = generateOTP();
     console.log("Generated OTP:", otp); // Log the generated OTP for debugging
     const otpExpires = new Date(Date.now() + 30 * 60 * 1000); // OTP expires in 5 mins
 
@@ -49,7 +49,7 @@ export const verifyOTP = async (req: Request, res: Response) => {
     const user = await Admin.findOne({ email });
     if (!user) {
       res.status(400).json({ message: "User not found", success: false });
-      return; 
+      return;
     }
 
     if (user) {
@@ -107,7 +107,7 @@ export const loginWithEmail = async (req: Request, res: Response) => {
         });
       }
 
-      const token = jwt.sign({ _id: user._id,email:user.email }, process.env.JWT_SECRET || "", { expiresIn: '1d' });
+      const token = jwt.sign({ _id: user._id, email: user.email, roll: user.roll }, process.env.JWT_SECRET || "", { expiresIn: '1d' });
 
       res.status(200).json({
         message: 'Logged in successfully.',
