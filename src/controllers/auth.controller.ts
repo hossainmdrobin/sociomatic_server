@@ -131,3 +131,13 @@ export const loginWithEmail = async (req: Request, res: Response) => {
     });
   }
 };
+
+
+// get user info
+export const getUserInfo = async (req:Request,res:Response) =>{
+  try{
+    const user = await Admin.findById(req.user._id).populate('user')
+  }catch(error){
+    res.status(500).json({success:false, message:"Some thing went wrong", error})
+  }
+}
