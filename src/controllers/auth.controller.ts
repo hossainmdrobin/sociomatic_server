@@ -76,6 +76,7 @@ export const verifyOTP = async (req: Request, res: Response) => {
 // This Controller is about Loggin with email
 export const loginWithEmail = async (req: Request, res: Response) => {
   const { email, password } = req.body;
+  console.log({email,password})
 
   // Check email and password is not falsy
   if (!email || !password) {
@@ -84,6 +85,7 @@ export const loginWithEmail = async (req: Request, res: Response) => {
       success: false,
       error: 'Missing credentials',
     });
+    return;
   }
 
   try {
@@ -95,6 +97,7 @@ export const loginWithEmail = async (req: Request, res: Response) => {
         success: false,
         error: 'User not found',
       });
+      return;
     }
 
     if (user) {
@@ -105,6 +108,7 @@ export const loginWithEmail = async (req: Request, res: Response) => {
           success: false,
           error: 'Incorrect password',
         });
+        return;
       }
 
       const token = jwt.sign({ _id: user._id, email: user.email, roll: user.roll }, process.env.JWT_SECRET || "", { expiresIn: '1d' });
@@ -121,6 +125,7 @@ export const loginWithEmail = async (req: Request, res: Response) => {
           token,
         },
       });
+      return;
     }
 
   } catch (err: any) {
@@ -136,8 +141,10 @@ export const loginWithEmail = async (req: Request, res: Response) => {
 // get user info
 export const getUserInfo = async (req:Request,res:Response) =>{
   try{
-    const user = await Admin.findById(req.user._id).populate('user')
+    const user = await Admin.findById(req.user._id).populate('accounts');
+    res.status(200).json({success:true, data:user,message:"User info fetched successfully"})
   }catch(error){
+    console.error("Error fetching user info:", error);
     res.status(500).json({success:false, message:"Some thing went wrong", error})
   }
 }
