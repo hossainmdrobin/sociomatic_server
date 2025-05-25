@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: express-api
+    env: node
+    plan: free
+    branch: main
+    buildCommand: npm install
+    startCommand: node index
+    envVars:
+      - key: MONGO_URI
+        fromDatabase:
+          name: express-mongo-db
+          property: connectionString
+
+databases:
+  - name: express-mongo-db
+    databaseName: expressdb
+    user: expressuser
+    plan: free
