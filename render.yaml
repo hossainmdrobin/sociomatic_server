@@ -5,7 +5,7 @@ services:
     plan: free
     branch: main
     buildCommand: npm install
-    startCommand: npm start
+    startCommand: node index
     envVars:
       - key: MONGO_URI
         fromDatabase:
