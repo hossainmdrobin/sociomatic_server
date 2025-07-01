@@ -20,17 +20,28 @@ export const addTextPost = async (req: Request, res: Response) => {
 
 export const updatePostById = async (req: Request, res: Response) => {
     const admin = req.user.roll == "admin" ? req.user._id : req.user.admin;
+    console.log(req.body)
     try {
-        const updatedPost = Post.findByIdAndUpdate(req.params.id,
+        const updatedPost = await Post.findByIdAndUpdate(req.params.id,
             {
                 ...req.body,
-                $pull: { editor: req.user._id },
-                $push: { editor: req.user._id }
-            })
+                $addToSet: { editor: req.user._id },
+                // $pull: { editor: req.user._id },
+                // $push: { editor: req.user._id }
+            }, {
+            new: true,
+            runValidators: true
+        }).lean();
+        console.log(updatedPost)
+        if (!updatedPost) {
+            res.status(404).json({ message: "Post not found", success: false });
+            return;
+        }
         res.status(200).json({ message: "Post Updated", success: true, data: updatedPost })
         return
 
-    } catch(e) {
+    } catch (e) {
+        // console.log(e)
         res.status(500).json({ message: "Server error", seccess: false, error: e });
         return;
 
