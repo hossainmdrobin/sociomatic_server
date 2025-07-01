@@ -5,6 +5,8 @@ import { Admin } from "./../../models/admin.model";
 import {getAppId, getAppSecret, getFBGraphURL} from "./../../config/facebook"
 
 export const addAccount = async (req: Request, res: Response) => {
+    console.log(getAppId(),"\n", getAppSecret(),"\n", getFBGraphURL());
+    const fullUrl = `${getFBGraphURL()}?grant_type=fb_exchange_token&client_id=${getAppId()}&client_secret=${getAppSecret()}&fb_exchange_token=${req.body.token}`
     try {
         const { email, type } = req.body;
         const existingAccount = await Account.findOne({ email, type });
@@ -12,7 +14,7 @@ export const addAccount = async (req: Request, res: Response) => {
         if (existingAccount) {
             res.status(400).json({ message: "Account Already exists", success: false, data: {} });
         }
-        const long_live_data = await fetch(`${getFBGraphURL()}?grant_type=fb_exchange_token&client_id=${getAppId()}&client_secret=${getAppSecret()}&fb_exchange_token=${req.body.token}`)
+        const long_live_data = await fetch(fullUrl)
         const long_live_data_json = await long_live_data.json();
         console.log("json data",long_live_data_json);
         req.body.addedBy = req.user._id;

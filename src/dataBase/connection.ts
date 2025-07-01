@@ -5,6 +5,7 @@ const MONGO_URI = process.env.MONGODB_URI || '';
 console.log(MONGO_URI)
 
 export const connectDB = async (): Promise<void> => {
+    console.log("mongoDB connection started", MONGO_URI);
     try {
         if (!MONGO_URI) {
             throw new Error('❌ MongoDB URI is not defined in environment variables');
