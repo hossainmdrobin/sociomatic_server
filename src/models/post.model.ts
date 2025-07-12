@@ -1,12 +1,14 @@
 import mongoose from "mongoose";
 
 const postSchema = new mongoose.Schema({
+    admin: { type: mongoose.Schema.Types.ObjectId, ref: "Admin", required: true },
     creator: { type: mongoose.Schema.Types.ObjectId, ref: "Admin", required: true },
-    editor: { type: mongoose.Schema.Types.ObjectId, ref: "Admin", required: false },
+    editor: [{ type: mongoose.Schema.Types.ObjectId, ref: "Admin", required: false }],
+    account:{type:mongoose.Schema.Types.ObjectId,ref:"Account"},
     text: { type: String, required: true },
     image: [{ type: String, required: false }],
     video: [{ type: String, required: false }],
-    media: [{ type: String, required: true, default: "facebook", enum: ["facebook", "instagram", "twitter", "linkedin"] }],
+    platform: [{ type: String, required: true, default: "facebook", enum: ["facebook", "instagram", "twitter", "linkedin"] }],
     stage: { type: String, required: true, default: "draft", enum: ["draft", "published", "deleted", "scheduled"] },
     budget: { type: Number, required: false, default: 0 },
     scheduledAt: { type: Date, required: false },
@@ -20,13 +22,13 @@ const postSchema = new mongoose.Schema({
         text: { type: String, required: true },
         createdAt: { type: Date, default: Date.now }
     }],
-    postLinks:[{
-        url:{type: String, required: true},
+    postLinks: [{
+        url: { type: String, required: true },
         platform: { type: String, required: true, enum: ["facebook", "instagram", "twitter", "linkedin"] },
         createdAt: { type: Date, default: Date.now }
     }],
-    postType: { type: String, required: true, enum: ["text", "image", "video", "link"] },
-    
+    postType: { type: String, required: false, enum: ["text", "image", "video", "link"] },
+
 }, {
     timestamps: true
 });
