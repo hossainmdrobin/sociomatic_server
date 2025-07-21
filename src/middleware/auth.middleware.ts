@@ -13,8 +13,7 @@ export const authenticateToken = (
   const token = authHeader && authHeader.startsWith('Bearer ')
     ? authHeader.split(' ')[1]
     : null;
-    console.log(process.env.JWT_SECRET);
-
+console.log(token)
   if (!token) {
      res.status(401).json({ message: 'No token provided' });
      return;
@@ -22,13 +21,13 @@ export const authenticateToken = (
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET || '');
-    console.log(decoded);
+    // console.log(decoded);
     
 
     req.user = decoded;
     next();
   } catch (err) {
-      console.error(err);
+      // console.error(err);
      res.status(403).json({ message: 'Invalid token' });
      return;
   }
