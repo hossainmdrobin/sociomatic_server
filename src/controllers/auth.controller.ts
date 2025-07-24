@@ -111,7 +111,7 @@ export const loginWithEmail = async (req: Request, res: Response) => {
         return;
       }
 
-      const token = jwt.sign({ _id: user._id, email: user.email, roll: user.roll }, process.env.JWT_SECRET || "", { expiresIn: '1d' });
+      const token = jwt.sign({ _id: user._id, email: user.email, roll: user.roll }, process.env.JWT_SECRET || "", { expiresIn: '7d' });
 
       res.status(200).json({
         message: 'Logged in successfully.',
