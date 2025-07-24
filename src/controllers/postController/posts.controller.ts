@@ -51,9 +51,17 @@ export const updatePostById = async (req: Request, res: Response) => {
 
 export const getPosts = async (req: Request, res: Response) => {
     const admin = req.user.roll == "admin" ? req.user._id : req.user.admin
+    const { date } = req.query as { date: string };
+    const [year, month] = date.split('-').map(Number);
+
+    const start = new Date(year, month - 1, 1);    // e.g., July 1, 2025
+    const end = new Date(year, month, 1);
+    console.log(start, end )
     try {
-        console.log({ admin })
-        const posts = await Post.find({ admin }).populate("creator").populate("editor").populate("account").sort({ createdAt: -1 });
+        const posts = await Post.find({ 
+            admin,
+            scheduledAt: { $gte: start, $lt: end }
+         }).populate("creator").populate("editor").populate("account").sort({ createdAt: -1 });
         res.status(200).json({ message: "Posts fetched successfully", success: true, data: posts });
     } catch (e) {
         console.log(e)
