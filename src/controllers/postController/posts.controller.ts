@@ -64,7 +64,6 @@ export const getPosts = async (req: Request, res: Response) => {
          }).populate("creator").populate("editor").populate("account").sort({ createdAt: -1 });
         res.status(200).json({ message: "Posts fetched successfully", success: true, data: posts });
     } catch (e) {
-        console.log(e)
         res.status(500).json({ message: "Server error", seccess: false, error: e });
     }
 
