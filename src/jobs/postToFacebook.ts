@@ -2,6 +2,11 @@ import { Job } from "agenda";
 import axios from "axios";
 import { Post } from './../models/post.model';
 import dotenv from "dotenv";
+import { Document, Types } from "mongoose";
+
+interface Account extends Document {
+    token: string;
+}
 dotenv.config();
 
 export default function defineFacebookJob(agenda: any) {
@@ -10,7 +15,7 @@ export default function defineFacebookJob(agenda: any) {
 
         if (!postId) return;
 
-        const post = await Post.findById(postId);
+        const post = await Post.findById(postId).populate<{ account: Account }>("account");
         if (!post || post.stage === "published") return;
 
         try {
@@ -19,7 +24,7 @@ export default function defineFacebookJob(agenda: any) {
             const response = await axios.post(url, null, {
                 params: {
                     message: post.text,
-                    access_token: process.env.FB_PAGE_ACCESS_TOKEN as string,
+                    access_token: post?.account?.token, // Ensure you have the correct access token
                 },
             });
 

@@ -15,9 +15,8 @@ import { connectDB } from "./dataBase/connection";
 
 // Custom functions
 import agenda from "./agendaConfig";
-
-
-
+import schedulePost from "./jobs/schedulePost";
+import defineFacebookJob from "./jobs/postToFacebook";
 
 dotenv.config();
 
@@ -38,13 +37,16 @@ app.get("/", (req: Request, res: Response) => {
 
 connectDB();
 
-agenda.define('conolse it', async () => {
-  console.log('Job is running: job.attrs.data')
-});
-
+// Starting agenda after the database connection
 (async() => {
   await agenda.start();
-  await agenda.every('3 seconds', 'conolse it', { id: 1 });
+  console.log("Agenda started");
+  schedulePost(agenda);
+  console.log("Scheduled post job defined");
+  defineFacebookJob(agenda);
+  console.log("Facebook job defined");
+  await agenda.every('1 seconds', 'schedule post');
+  console.log("Scheduled post job will run every second");
 })();
 
 
