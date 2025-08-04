@@ -45,7 +45,7 @@ connectDB();
   console.log("Scheduled post job defined");
   defineFacebookJob(agenda);
   console.log("Facebook job defined");
-  await agenda.every('1 seconds', 'schedule post');
+  await agenda.every('30 seconds', 'schedule post');
   console.log("Scheduled post job will run every second");
 })();
 
