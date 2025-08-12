@@ -5,9 +5,9 @@ import { Post } from './../../models/post.model';
 
 export const addTextPost = async (req: Request, res: Response) => {
     const admin = req.user.roll == "admin" ? req.user._id : req.user.admin;
-    console.log(req.body)
+
     try {
-        const newPost = new Post({ ...req.body, admin, creator: req.user._id, editor: req.user._id, })
+        const newPost = new Post({ ...req.body, admin, creator: req.user._id, editor: req.user._id, stage:req.body.stage || "saved" })
         await newPost.save();
         res.status(200).json({ message: "Post created successfully", success: true, data: newPost });
 
