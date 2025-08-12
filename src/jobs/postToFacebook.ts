@@ -15,7 +15,8 @@ export default function defineFacebookJob(agenda: any) {
 
         if (!postId) return;
 
-        const post = await Post.findById(postId).populate<{ account: Account }>("account");
+        const post = await Post.findById(postId)
+            .populate<{ account: Account }>("account");
         if (!post || post.stage === "published") return;
 
         try {
