@@ -38,9 +38,9 @@ app.get("/", (req: Request, res: Response) => {
 
 connectDB();
 
-agenda.define("agenda running", () => {
-  console.log("Agenda is running");
-});
+// agenda.define("agenda running", () => {
+//   console.log("Agenda is running");
+// });
 
 // Ensure the agenda is connected to the database before starting
 agenda.on('ready', () => {
@@ -53,13 +53,8 @@ agenda.on('ready', () => {
   console.log("Agenda started");
   schedulePost(agenda);
   publishPost(agenda)
-  console.log("Scheduled post job defined");
   defineFacebookJob(agenda);
-  console.log("Facebook job defined");
   await agenda.every('30 seconds', 'schedule post');
-  await agenda.now('schedule post', {});
-  await agenda.every('1 second', 'agenda running');
-  console.log("Scheduled post job will run every second");
 })();
 
 

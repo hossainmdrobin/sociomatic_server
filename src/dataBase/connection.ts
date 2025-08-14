@@ -7,7 +7,6 @@ const MONGO_URI = process.env.MONGODB_URI || '';
 console.log(MONGO_URI)
 
 export const connectDB = async (): Promise<void> => {
-    console.log("mongoDB connection started", MONGO_URI);
     // defineFacebookJob(agenda);
     try {
         if (!MONGO_URI) {
