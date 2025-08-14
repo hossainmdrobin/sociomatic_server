@@ -18,7 +18,6 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const MONGO_URI = process.env.MONGODB_URI || '';
 console.log(MONGO_URI);
 const connectDB = () => __awaiter(void 0, void 0, void 0, function* () {
-    console.log("mongoDB connection started", MONGO_URI);
     // defineFacebookJob(agenda);
     try {
         if (!MONGO_URI) {

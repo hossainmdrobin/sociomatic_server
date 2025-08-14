@@ -41,9 +41,9 @@ app.get("/", (req, res) => {
     res.send("Server is running...");
 });
 (0, connection_1.connectDB)();
-agendaConfig_1.default.define("agenda running", () => {
-    console.log("Agenda is running");
-});
+// agenda.define("agenda running", () => {
+//   console.log("Agenda is running");
+// });
 // Ensure the agenda is connected to the database before starting
 agendaConfig_1.default.on('ready', () => {
     console.log("Agenda is ready");
@@ -54,13 +54,8 @@ agendaConfig_1.default.on('ready', () => {
     console.log("Agenda started");
     (0, schedulePost_1.default)(agendaConfig_1.default);
     (0, publishPost_1.publishPost)(agendaConfig_1.default);
-    console.log("Scheduled post job defined");
     (0, postToFacebook_1.default)(agendaConfig_1.default);
-    console.log("Facebook job defined");
     yield agendaConfig_1.default.every('30 seconds', 'schedule post');
-    yield agendaConfig_1.default.now('schedule post', {});
-    yield agendaConfig_1.default.every('1 second', 'agenda running');
-    console.log("Scheduled post job will run every second");
 }))();
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
