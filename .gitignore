@@ -3,7 +3,6 @@ node_modules/
 package-lock.json
 
 # Compiled TypeScript files
-dist/
 
 # Environment variables
 .env
