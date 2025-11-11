@@ -22,7 +22,7 @@ function schedulePost(agenda) {
                 post.stage = "scheduled";
                 yield post.save();
                 // Schedule the post to be published in 15 seconds
-                agenda.schedule("in 15 seconds", 'publish post', { id: post._id.toString(), type: post.platform });
+                agenda.schedule("in 15 seconds", 'publish post', { id: post._id.toString(), platform: post.platform });
                 console.log(`Scheduled post with ID: ${post._id} to be published in 15 seconds`);
             }
         }

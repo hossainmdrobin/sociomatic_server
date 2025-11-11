@@ -8,9 +8,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getPosts = exports.updatePostById = exports.addTextPost = void 0;
+exports.createPostNow = exports.getPosts = exports.updatePostById = exports.addTextPost = void 0;
 const post_model_1 = require("./../../models/post.model");
+const axios_1 = __importDefault(require("axios"));
+const account_model_1 = require("./../../models/account.model");
 const addTextPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const admin = req.user.roll == "admin" ? req.user._id : req.user.admin;
     try {
@@ -66,3 +71,25 @@ const getPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.getPosts = getPosts;
+const createPostNow = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    const admin = req.user.roll == "admin" ? req.user._id : req.user.admin;
+    try {
+        const account = yield account_model_1.Account.findById(req.body.account);
+        const newPost = new post_model_1.Post(Object.assign(Object.assign({}, req.body), { admin, creator: req.user._id, editor: req.user._id, stage: req.body.stage || "saved" }));
+        const url = `https://graph.facebook.com/v23.0/${account === null || account === void 0 ? void 0 : account.socialId}/feed?access_token=${account === null || account === void 0 ? void 0 : account.token}`;
+        const fbresponse = yield axios_1.default.post(url, {
+            message: newPost.text,
+            access_token: account === null || account === void 0 ? void 0 : account.token,
+            published: true
+        });
+        newPost.socialId = (_a = fbresponse === null || fbresponse === void 0 ? void 0 : fbresponse.data) === null || _a === void 0 ? void 0 : _a.id;
+        newPost.stage = "published";
+        yield newPost.save();
+        res.status(200).json({ message: "Post Published successfully", success: true, data: newPost });
+    }
+    catch (e) {
+        res.status(500).json({ message: "Server error", seccess: false, error: e });
+    }
+});
+exports.createPostNow = createPostNow;

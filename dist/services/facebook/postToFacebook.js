@@ -18,19 +18,18 @@ const post_model_1 = require("./../../models/post.model");
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 const postToFacebook = (postId) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b;
+    var _a, _b, _c, _d;
     if (!postId)
         return;
     const post = yield post_model_1.Post.findById(postId).populate("account");
     if (!post || post.stage === "published")
         return;
     try {
-        const url = "https://graph.facebook.com/v19.0/me/feed";
-        const response = yield axios_1.default.post(url, null, {
-            params: {
-                message: post.text,
-                access_token: (_a = post === null || post === void 0 ? void 0 : post.account) === null || _a === void 0 ? void 0 : _a.token, // Ensure you have the correct access token
-            },
+        const url = `https://graph.facebook.com/v23.0/${(_a = post === null || post === void 0 ? void 0 : post.account) === null || _a === void 0 ? void 0 : _a.socialId}/feed?access_token=${(_b = post === null || post === void 0 ? void 0 : post.account) === null || _b === void 0 ? void 0 : _b.token}`;
+        const response = yield axios_1.default.post(url, {
+            message: post.text,
+            access_token: (_c = post === null || post === void 0 ? void 0 : post.account) === null || _c === void 0 ? void 0 : _c.token, // Ensure you have the correct access token
+            published: true
         });
         post.stage = "published";
         post.publishedAt = new Date();
@@ -39,7 +38,7 @@ const postToFacebook = (postId) => __awaiter(void 0, void 0, void 0, function* (
         console.log(`✅ Posted to Facebook: ${response.data.id}`);
     }
     catch (error) {
-        console.error(`❌ Error posting to Facebook:`, ((_b = error.response) === null || _b === void 0 ? void 0 : _b.data) || error.message);
+        console.error(`❌ Error posting to Facebook:`, ((_d = error.response) === null || _d === void 0 ? void 0 : _d.data) || error.message);
     }
 });
 exports.postToFacebook = postToFacebook;

@@ -13,13 +13,13 @@ exports.publishPost = void 0;
 const postToFacebook_1 = require("./../services/facebook/postToFacebook");
 const publishPost = (agenda) => __awaiter(void 0, void 0, void 0, function* () {
     agenda.define('publish post', { concurrency: 5 }, (job) => __awaiter(void 0, void 0, void 0, function* () {
-        const { id, type } = job.attrs.data;
-        console.log(`Publishing post with ID: ${id} and type: ${type}`);
+        const { id, platform } = job.attrs.data;
+        console.log(`Publishing post with ID: ${id} and type: ${platform}`);
         if (!id)
             return;
-        if (!type)
+        if (!platform)
             return;
-        if (type === "facebook") {
+        if (platform === "facebook") {
             yield (0, postToFacebook_1.postToFacebook)(id);
         }
     }));
