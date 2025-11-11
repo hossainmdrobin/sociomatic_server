@@ -32,6 +32,4 @@ export const postToFacebook = async (postId: string) => {
     } catch (error: any) {
         console.error(`❌ Error posting to Facebook:`, error.response?.data || error.message);
     }
-
-
 }
