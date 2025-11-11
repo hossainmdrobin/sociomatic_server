@@ -2,12 +2,15 @@
 
 import { Request, Response } from 'express';
 import { Post } from './../../models/post.model';
+import axios from 'axios';
+import { Account } from "./../../models/account.model"
+import { access } from 'fs';
 
 export const addTextPost = async (req: Request, res: Response) => {
     const admin = req.user.roll == "admin" ? req.user._id : req.user.admin;
 
     try {
-        const newPost = new Post({ ...req.body, admin, creator: req.user._id, editor: req.user._id, stage:req.body.stage || "saved" })
+        const newPost = new Post({ ...req.body, admin, creator: req.user._id, editor: req.user._id, stage: req.body.stage || "saved" })
         await newPost.save();
         res.status(200).json({ message: "Post created successfully", success: true, data: newPost });
 
@@ -15,7 +18,6 @@ export const addTextPost = async (req: Request, res: Response) => {
         console.log(e)
         res.status(500).json({ message: "Server error", seccess: false, error: e });
     }
-
 }
 
 export const updatePostById = async (req: Request, res: Response) => {
@@ -56,15 +58,37 @@ export const getPosts = async (req: Request, res: Response) => {
 
     const start = new Date(year, month - 1, 1);    // e.g., July 1, 2025
     const end = new Date(year, month, 1);
-    console.log(start, end )
+    console.log(start, end)
     try {
-        const posts = await Post.find({ 
+        const posts = await Post.find({
             admin,
             scheduledAt: { $gte: start, $lt: end }
-         }).populate("creator").populate("editor").populate("account").sort({ createdAt: -1 });
+        }).populate("creator").populate("editor").populate("account").sort({ createdAt: -1 });
         res.status(200).json({ message: "Posts fetched successfully", success: true, data: posts });
     } catch (e) {
         res.status(500).json({ message: "Server error", seccess: false, error: e });
     }
 
+}
+
+export const createPostNow = async (req: Request, res: Response) => {
+    const admin = req.user.roll == "admin" ? req.user._id : req.user.admin;
+    try {
+        const account = await Account.findById(req.body.account);
+        const newPost = new Post({ ...req.body, admin, creator: req.user._id, editor: req.user._id, stage: req.body.stage || "saved" })
+        const url = `https://graph.facebook.com/v23.0/${account?.socialId}/feed?access_token=${account?.token}`;
+
+        const fbresponse = await axios.post(url,
+            {
+                message: newPost.text,
+                access_token: account?.token,
+                published: true
+            });
+        newPost.socialId = fbresponse?.data?.id
+        newPost.stage = "published";
+        await newPost.save();
+        res.status(200).json({ message: "Post Published successfully", success: true, data: newPost });
+    } catch (e) {
+        res.status(500).json({ message: "Server error", seccess: false, error: e });
+    }
 }

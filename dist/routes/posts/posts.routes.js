@@ -9,5 +9,6 @@ const posts_controller_1 = require("./../../controllers/postController/posts.con
 const router = express_1.default.Router();
 router.get("/get-posts", auth_middleware_1.authenticateToken, posts_controller_1.getPosts);
 router.post("/add-post/text", auth_middleware_1.authenticateToken, posts_controller_1.addTextPost);
+router.post("/post-now", auth_middleware_1.authenticateToken, posts_controller_1.createPostNow);
 router.post("/update-post/:id", auth_middleware_1.authenticateToken, posts_controller_1.updatePostById);
 exports.default = router;

@@ -1,3 +1,4 @@
+import { platform } from "os";
 import { Post } from "./../models/post.model";
 
 export default function schedulePost(agenda: any) {
@@ -10,7 +11,7 @@ export default function schedulePost(agenda: any) {
                 post.stage = "scheduled";
                 await post.save();
                 // Schedule the post to be published in 15 seconds
-                agenda.schedule("in 15 seconds", 'publish post', { id: post._id.toString(),type:post.platform });
+                agenda.schedule("in 15 seconds", 'publish post', { id: post._id.toString(),platform:post.platform });
                 console.log(`Scheduled post with ID: ${post._id} to be published in 15 seconds`);
             }
         } catch (e) {

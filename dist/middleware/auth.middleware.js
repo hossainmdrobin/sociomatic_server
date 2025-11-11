@@ -16,12 +16,10 @@ const authenticateToken = (req, res, next) => {
     }
     try {
         const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET || '');
-        console.log(decoded);
         req.user = decoded;
         next();
     }
     catch (err) {
-        // console.error(err);
         res.status(403).json({ message: 'Invalid token' });
         return;
     }
