@@ -78,11 +78,12 @@ export const createPostNow = async (req: Request, res: Response) => {
         const newPost = new Post({ ...req.body, admin, creator: req.user._id, editor: req.user._id, stage: req.body.stage || "saved" })
         const url = `https://graph.facebook.com/v23.0/${account?.socialId}/feed?access_token=${account?.token}`;
 
-        const fbresponse = await axios.post(url, {
-            message: newPost.text,
-            access_token: account?.token,
-            published: true
-        });
+        const fbresponse = await axios.post(url,
+            {
+                message: newPost.text,
+                access_token: account?.token,
+                published: true
+            });
         newPost.socialId = fbresponse?.data?.id
         newPost.stage = "published";
         await newPost.save();

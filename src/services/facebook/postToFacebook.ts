@@ -5,6 +5,7 @@ dotenv.config();
 
 interface Account extends Document {
     token: string;
+    socialId: string;
 }
 export const postToFacebook = async (postId: string) => {
     if (!postId) return;
@@ -13,14 +14,14 @@ export const postToFacebook = async (postId: string) => {
     if (!post || post.stage === "published") return;
 
     try {
-        const url = "https://graph.facebook.com/v19.0/me/feed";
-
-        const response = await axios.post(url, null, {
-            params: {
+        const url = `https://graph.facebook.com/v23.0/${post?.account?.socialId}/feed?access_token=${post?.account?.token}`;
+        const response = await axios.post(url, 
+            {
                 message: post.text,
                 access_token: post?.account?.token, // Ensure you have the correct access token
+                published: true
             },
-        });
+        );
 
         post.stage = "published";
         post.publishedAt = new Date();
