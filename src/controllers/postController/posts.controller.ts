@@ -73,24 +73,21 @@ export const getPosts = async (req: Request, res: Response) => {
 
 export const createPostNow = async (req: Request, res: Response) => {
     const admin = req.user.roll == "admin" ? req.user._id : req.user.admin;
-
     try {
         const account = await Account.findById(req.body.account);
         const newPost = new Post({ ...req.body, admin, creator: req.user._id, editor: req.user._id, stage: req.body.stage || "saved" })
         const url = `https://graph.facebook.com/v23.0/${account?.socialId}/feed?access_token=${account?.token}`;
 
         const fbresponse = await axios.post(url, {
-            message: "First post from express app",
+            message: newPost.text,
             access_token: account?.token,
             published: true
         });
-        console.log(fbresponse.data);
-
+        newPost.socialId = fbresponse?.data?.id
         newPost.stage = "published";
         await newPost.save();
         res.status(200).json({ message: "Post Published successfully", success: true, data: newPost });
     } catch (e) {
-        console.log(e)
         res.status(500).json({ message: "Server error", seccess: false, error: e });
     }
 }
