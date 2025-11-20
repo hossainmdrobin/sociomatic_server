@@ -5,7 +5,6 @@ export default function schedulePost(agenda: any) {
     agenda.define('schedule post', { concurrency: 5 }, async () => {
         try {
             const posts = await Post.find({ scheduledAt: { $lte: new Date() }, stage: "saved" })
-            console.log(`Found ${posts.length} posts to schedule.`);
             if (posts.length === 0) return;
             for (const post of posts) {
                 post.stage = "scheduled";
