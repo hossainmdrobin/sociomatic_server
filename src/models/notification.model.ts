@@ -1,11 +1,16 @@
-import { Schema, model, Document } from "mongoose";
+import mongoose from "mongoose";
 
-export interface INotification extends Document {
-  user: string; // user who receives the notif
-  title: string;
-  message: string;
-  action?: string; // e.g., "OPEN_POST", "FOLLOW_USER"
-  link?: string;   // URL or app route
-  read: boolean;
-  createdAt: Date;
-}
+const notificationSchema = new mongoose.Schema({
+  admin: { type: mongoose.Schema.Types.ObjectId, ref: "Admin", required: true },
+  user: { type: mongoose.Schema.Types.ObjectId, ref: "Admin" }, // user who receives the notif
+  title: String,
+  message: String,
+  action: String, // e.g., "OPEN_POST", "FOLLOW_USER"
+  link: String,   // URL or app route
+  read: { type: Boolean, default: false },
+  createdAt: Date,
+}, {
+  timestamps: true
+})
+
+export const Notificaiton = mongoose.model("Notificaiton", notificationSchema);
