@@ -92,3 +92,12 @@ export const createPostNow = async (req: Request, res: Response) => {
         res.status(500).json({ message: "Server error", seccess: false, error: e });
     }
 }
+
+export const savePostWithFiles = async (req: Request, res: Response) => {
+    const admin = req.user.roll == "admin" ? req.user._id : req.user.admin;
+    try {
+        
+    } catch (e) {
+        res.status(500).json({ message: "Server error", seccess: false, error: e });
+    }
+}
