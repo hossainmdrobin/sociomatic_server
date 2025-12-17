@@ -96,8 +96,7 @@ export const savePostWithFiles = async (req: Request, res: Response) => {
     const admin = req.user.roll == "admin" ? req.user._id : req.user.admin;
     const images: string[] = [];
     const videos: string[] = [];
-
-    (req.files as Express.Multer.File[]).forEach(file => {
+    (req.files as Express.Multer.File[])?.forEach(file => {
         if (file.mimetype.startsWith("video")) videos.push(file.path);
         else images.push(file.path);
     });
