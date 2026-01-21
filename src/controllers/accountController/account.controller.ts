@@ -17,8 +17,8 @@ export const addAccount = async (req: Request, res: Response) => {
         const long_live_data = await fetch(fullUrl)
         const long_live_data_json = await long_live_data.json();
         req.body.addedBy = req.user._id;
-        req.body.expiresIn = long_live_data_json.expires_in;
-        req.body.accessToken = long_live_data_json.access_token;
+        req.body.tokenExpires =  new Date(Date.now() + 59*24*3600*1000);
+        req.body.accessToken =   long_live_data_json.access_token;
         const newAccount = new Account({ ...req.body });
         await Admin.findByIdAndUpdate(req.user._id, { $push: { accounts: newAccount._id } });
 
@@ -26,6 +26,7 @@ export const addAccount = async (req: Request, res: Response) => {
         res.status(200).json({ message: "Account created successfully", success: true, data: newAccount });
 
     } catch (error) {
+        console.log(error);
         res.status(500).json({ message: "Server error", seccess: false, error });
     }
 }

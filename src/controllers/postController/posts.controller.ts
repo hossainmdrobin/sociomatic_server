@@ -107,6 +107,7 @@ export const savePostWithFiles = async (req: Request, res: Response) => {
         res.status(200).json({ message: "Post created successfully", success: true, data: newPost });
 
     } catch (e) {
+        console.log(e)
         res.status(500).json({ message: "Server error", seccess: false, error: e });
     }
 }
