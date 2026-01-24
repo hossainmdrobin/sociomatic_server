@@ -3,6 +3,7 @@ import { Post } from './../../models/post.model';
 import dotenv from 'dotenv'
 import { Notificaiton } from "../../models/notification.model";
 dotenv.config();
+const GRAPH = "https://graph.facebook.com/v19.0";
 
 interface Account extends Document {
     token: string;
@@ -15,14 +16,38 @@ export const postToFacebook = async (postId: string) => {
     if (!post || post.stage === "published") return;
 
     try {
-        const url = `https://graph.facebook.com/v23.0/${post?.account?.socialId}/feed?access_token=${post?.account?.token}`;
-        const response = await axios.post(url,
-            {
+        const mediaIds = [];
+        console.log("Uplaoding images to Facebook...");
+
+        for (const url of post.images) {
+            const res = await axios.post(
+                `${GRAPH}/${post.account.socialId}/photos`,
+                {
+                    url,
+                    published: false,
+                    access_token: post.account.token,
+                }
+            );
+
+            mediaIds.push({ media_fbid: res.data.id });
+        }
+        const url = "https://graph.facebook.com/v19.0/me/feed";
+        console.log("Creating Facebook post...");
+        const response = await axios.post(url, null, {
+            params: {
                 message: post.text,
+                attached_media: mediaIds,
                 access_token: post?.account?.token, // Ensure you have the correct access token
-                published: true
             },
-        );
+        });
+        // const url = `https://graph.facebook.com/v23.0/${post?.account?.socialId}/feed?access_token=${post?.account?.token}`;
+        // const response = await axios.post(url,
+        //     {
+        //         message: post.text,
+        //         access_token: post?.account?.token, // Ensure you have the correct access token
+        //         published: true
+        //     },
+        // );
 
         post.stage = "published";
         post.publishedAt = new Date();
