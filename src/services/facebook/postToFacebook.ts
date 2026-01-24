@@ -9,6 +9,43 @@ interface Account extends Document {
     token: string;
     socialId: string;
 }
+
+// FUNCTION TO UPLOAD VIDEO
+const postWithVedio = async ({ fbUrl, post }: { fbUrl: string, post: any }) => {
+    const res = await axios.post(
+        fbUrl,
+        {
+            postage_url: post.videos[0],
+            uploaded:true,
+            // published: false,
+            access_token: post.account.token,
+        }
+    );
+    console.log("Video uploaded");
+
+    const url = "https://graph.facebook.com/v19.0/me/feed";
+    const response = await axios.post(url, null, {
+        params: {
+            message: post.text,
+            attached_media: res.data.id,
+            access_token: post?.account?.token, // Ensure you have the correct access token
+        },
+    });
+    console.log("Post created with video");
+    post.stage = "published";
+    post.publishedAt = new Date();
+    post.socialId = response.data.id;
+    const notification = new Notificaiton({
+        admin: post.admin,
+        title: "New Post Published",
+        message: `A new post has been published to Facebook with ID: ${response.data.id}`,
+    })
+    await notification.save();
+    await post.save();
+
+}
+
+// POSTING VIDEOS INCLUDING iMAGE OR VIDEO
 export const postToFacebook = async (postId: string) => {
     if (!postId) return;
 
@@ -16,6 +53,17 @@ export const postToFacebook = async (postId: string) => {
     if (!post || post.stage === "published") return;
 
     try {
+        // UPLOADING VIDEO IF EXISTS
+        if (post.videos && post.videos.length > 0) {
+            console.log("in the condition")
+            await postWithVedio({
+                fbUrl: `${GRAPH}/${post.account.socialId}/videos`,
+                post
+            })
+            return;
+        }
+
+        // UPLOADING IMAGES IF EXISTS
         const mediaIds = [];
         console.log("Uplaoding images to Facebook...");
 
@@ -32,7 +80,6 @@ export const postToFacebook = async (postId: string) => {
             mediaIds.push({ media_fbid: res.data.id });
         }
         const url = "https://graph.facebook.com/v19.0/me/feed";
-        console.log("Creating Facebook post...");
         const response = await axios.post(url, null, {
             params: {
                 message: post.text,
@@ -40,14 +87,6 @@ export const postToFacebook = async (postId: string) => {
                 access_token: post?.account?.token, // Ensure you have the correct access token
             },
         });
-        // const url = `https://graph.facebook.com/v23.0/${post?.account?.socialId}/feed?access_token=${post?.account?.token}`;
-        // const response = await axios.post(url,
-        //     {
-        //         message: post.text,
-        //         access_token: post?.account?.token, // Ensure you have the correct access token
-        //         published: true
-        //     },
-        // );
 
         post.stage = "published";
         post.publishedAt = new Date();
