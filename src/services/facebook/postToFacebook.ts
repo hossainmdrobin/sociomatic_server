@@ -2,6 +2,8 @@ import axios from "axios";
 import { Post } from './../../models/post.model';
 import dotenv from 'dotenv'
 import { Notificaiton } from "../../models/notification.model";
+import { access } from "fs";
+import { deserialize } from "v8";
 dotenv.config();
 const GRAPH = "https://graph.facebook.com/v19.0";
 
@@ -16,7 +18,7 @@ const postWithVedio = async ({ fbUrl, post }: { fbUrl: string, post: any }) => {
         fbUrl,
         {
             postage_url: post.videos[0],
-            uploaded:true,
+            uploaded: true,
             // published: false,
             access_token: post.account.token,
         }
@@ -55,13 +57,26 @@ export const postToFacebook = async (postId: string) => {
     try {
         // UPLOADING VIDEO IF EXISTS
         if (post.videos && post.videos.length > 0) {
-            console.log("in the condition")
-            await postWithVedio({
-                fbUrl: `${GRAPH}/${post.account.socialId}/videos`,
-                post
+            const res = await axios.post(`https://graph.facebook.com/v17.0/761979666988561/videos`, {
+                file_url: post.videos[0],
+                access_token: post.account.token,
+                description: post.text
+            });
+            console.log("Video upload response:", res.data);
+
+            post.stage = "published";
+            post.publishedAt = new Date();
+            post.socialId = res.data.id;
+            const notification = new Notificaiton({
+                admin: post.admin,
+                title: "New Post Published",
+                message: `A new post has been published to Facebook with ID: ${res.data.id}`,
             })
+            await notification.save();
+            await post.save();
             return;
         }
+
 
         // UPLOADING IMAGES IF EXISTS
         const mediaIds = [];
