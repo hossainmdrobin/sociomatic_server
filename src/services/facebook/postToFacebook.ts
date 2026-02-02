@@ -2,8 +2,6 @@ import axios from "axios";
 import { Post } from './../../models/post.model';
 import dotenv from 'dotenv'
 import { Notificaiton } from "../../models/notification.model";
-import { access } from "fs";
-import { deserialize } from "v8";
 dotenv.config();
 const GRAPH = "https://graph.facebook.com/v19.0";
 
