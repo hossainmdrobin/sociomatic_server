@@ -1,4 +1,3 @@
-import { platform } from "os";
 import { Post } from "./../models/post.model";
 
 export default function schedulePost(agenda: any) {
