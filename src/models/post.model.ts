@@ -9,7 +9,7 @@ const postSchema = new mongoose.Schema({
     text: { type: String, required: true },
     images: [{ type: String, required: false }],
     videos: [{ type: String, required: false }],
-    platform: { type: String, required: true, default: "facebook", enum: ["facebook", "instagram", "twitter", "linkedin"] },
+    platform: { type: String, required: true, default: "facebook", enum: ["facebook", "instagram", "twitter", "linkedin","youtube"] },
     stage: { type: String, required: true, default: "draft", enum: ["draft","saved", "published", "deleted", "scheduled"] },
     budget: { type: Number, required: false, default: 0 },
     scheduledAt: { type: Date, required: false },

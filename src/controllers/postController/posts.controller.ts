@@ -94,6 +94,7 @@ export const createPostNow = async (req: Request, res: Response) => {
 
 export const savePostWithFiles = async (req: Request, res: Response) => {
     const admin = req.user.roll == "admin" ? req.user._id : req.user.admin;
+    console.log(req.body)
     const images: string[] = [];
     const videos: string[] = [];
     (req.files as Express.Multer.File[])?.forEach(file => {

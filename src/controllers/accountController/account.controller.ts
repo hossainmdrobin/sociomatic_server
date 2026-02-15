@@ -2,11 +2,9 @@
 import { Request, Response } from "express";
 import { Account } from "../../models/account.model";
 import { Admin } from "./../../models/admin.model";
-import {getAppId, getAppSecret, getFBGraphURL} from "./../../config/facebook"
 
 export const addAccount = async (req: Request, res: Response) => {
     const { socialId,token } = req.body;
-    const fullUrl = `${getFBGraphURL()}?grant_type=fb_exchange_token&client_id=${getAppId()}&client_secret=${getAppSecret()}&fb_exchange_token=${token}`
     try {
         
         const existingAccount = await Account.findOne({ socialId });
@@ -14,11 +12,8 @@ export const addAccount = async (req: Request, res: Response) => {
         if (existingAccount) {
             res.status(400).json({ message: "Account Already exists", success: false, data: {} });
         }
-        const long_live_data = await fetch(fullUrl)
-        const long_live_data_json = await long_live_data.json();
         req.body.addedBy = req.user._id;
         req.body.tokenExpires =  new Date(Date.now() + 59*24*3600*1000);
-        req.body.accessToken =   long_live_data_json.access_token;
         const newAccount = new Account({ ...req.body });
         await Admin.findByIdAndUpdate(req.user._id, { $push: { accounts: newAccount._id } });
 
