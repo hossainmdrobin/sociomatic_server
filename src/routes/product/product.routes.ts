@@ -1,6 +1,6 @@
-import { createProduct, deleteProduct, getProductById, getProducts, updateProduct } from "controllers/productController/product.controller";
+import { createProduct, deleteProduct, getProductById, getProducts, updateProduct } from "../../controllers/productController/product.controller";
 import { Router } from "express";
-import { authenticateToken } from "middleware/auth.middleware";
+import { authenticateToken } from "./../../middleware/auth.middleware";
 
 const router = Router();
 

@@ -5,6 +5,7 @@ import { generateOTP } from "../utils/otp.util";
 import { sendOTP } from "../services/email.service";
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import { Institute } from "../models/institute.model";
 dotenv.config();
 
 // This controller handles user signup and OTP verification and Login
@@ -29,7 +30,8 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
     const otpExpires = new Date(Date.now() + 30 * 60 * 1000); // OTP expires in 5 mins
 
     // Save user with OTP
-    const newUser = new Admin({ email, name, password: hashedPassword, otp, otpExpires });
+    const institute = new Institute({})
+    const newUser = new Admin({ institute: institute._id, email, name, password: hashedPassword, otp, otpExpires });
     await newUser.save();
 
     // Send OTP via email
@@ -76,7 +78,7 @@ export const verifyOTP = async (req: Request, res: Response) => {
 // This Controller is about Loggin with email
 export const loginWithEmail = async (req: Request, res: Response) => {
   const { email, password } = req.body;
-  console.log({email,password})
+  console.log({ email, password })
 
   // Check email and password is not falsy
   if (!email || !password) {
@@ -139,12 +141,12 @@ export const loginWithEmail = async (req: Request, res: Response) => {
 
 
 // get user info
-export const getUserInfo = async (req:Request,res:Response) =>{
-  try{
+export const getUserInfo = async (req: Request, res: Response) => {
+  try {
     const user = await Admin.findById(req.user._id).populate('accounts');
-    res.status(200).json({success:true, data:user,message:"User info fetched successfully"})
-  }catch(error){
+    res.status(200).json({ success: true, data: user, message: "User info fetched successfully" })
+  } catch (error) {
     console.error("Error fetching user info:", error);
-    res.status(500).json({success:false, message:"Some thing went wrong", error})
+    res.status(500).json({ success: false, message: "Some thing went wrong", error })
   }
 }
