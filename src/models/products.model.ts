@@ -2,6 +2,7 @@ import mongoose, { Schema, Document } from "mongoose"
 
 export interface IProduct extends Document {
     institute: mongoose.Types.ObjectId,
+    uploadedBy: mongoose.Types.ObjectId,
     name: string
     price: number
     description?: string
@@ -10,7 +11,8 @@ export interface IProduct extends Document {
     category?: string
     tags?: string[]
     targetAudience?: string[]
-    images?: string[]
+    images?: string[],
+    videos?: string[],
     brand?: string
     stock?: number
     status: "active" | "inactive"
@@ -18,7 +20,8 @@ export interface IProduct extends Document {
 
 const ProductSchema = new Schema<IProduct>(
     {
-        institute: { type: Schema.Types.ObjectId, required: true,ref:"Institute" },
+        institute: { type: Schema.Types.ObjectId, required: true, ref: "Institute" },
+        uploadedBy: { type: Schema.Types.ObjectId, required: true, ref: "Admin" },
         name: { type: String, required: true },
         price: { type: Number, required: true, },
         description: { type: String, },
@@ -28,6 +31,7 @@ const ProductSchema = new Schema<IProduct>(
         tags: [{ type: String, },],
         targetAudience: [{ type: String, },],
         images: [{ type: String, },],
+        videos: [{ type: String, }],
         brand: { type: String, },
         stock: { type: Number, default: 0, },
         status: { type: String, enum: ["active", "inactive"], default: "active", },

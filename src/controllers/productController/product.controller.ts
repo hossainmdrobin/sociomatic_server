@@ -3,8 +3,14 @@ import Product from "./../../models/products.model";
 
 // Create a product
 export const createProduct = async (req: Request, res: Response) => {
+  const images: string[] = [];
+  const videos: string[] = [];
+  (req.files as Express.Multer.File[])?.forEach(file => {
+    if (file.mimetype.startsWith("video")) videos.push(file.path);
+    else images.push(file.path);
+  });
   try {
-    const product = new Product(req.body);
+    const product = new Product({...req.body, images,videos});
     const savedProduct = await product.save();
     res.status(201).json({ success: true, data: savedProduct });
   } catch (err) {
