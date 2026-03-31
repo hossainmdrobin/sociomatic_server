@@ -10,7 +10,7 @@ export const createProduct = async (req: Request, res: Response) => {
     else images.push(file.path);
   });
   try {
-    const product = new Product({...req.body, images,videos,uploadedBy:req.user._id});
+    const product = new Product({...req.body, images,videos,uploadedBy:req.user._id, institute:req.user.institute});
     const savedProduct = await product.save();
     res.status(201).json({ success: true, data: savedProduct });
   } catch (err) {
