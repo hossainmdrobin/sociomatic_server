@@ -1,3 +1,4 @@
+import { Institute } from './../models/institute.model';
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import { Admin } from "../models/admin.model";
@@ -5,7 +6,6 @@ import { generateOTP } from "../utils/otp.util";
 import { sendOTP } from "../services/email.service";
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-import { Institute } from "../models/institute.model";
 dotenv.config();
 
 // This controller handles user signup and OTP verification and Login
@@ -113,7 +113,7 @@ export const loginWithEmail = async (req: Request, res: Response) => {
         return;
       }
 
-      const token = jwt.sign({ _id: user._id, email: user.email, roll: user.roll }, process.env.JWT_SECRET || "", { expiresIn: '7d' });
+      const token = jwt.sign({ _id: user._id, email: user.email, roll: user.roll,institute: user.institute }, process.env.JWT_SECRET || "", { expiresIn: '7d' });
 
       res.status(200).json({
         message: 'Logged in successfully.',

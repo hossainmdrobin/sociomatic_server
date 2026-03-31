@@ -1,6 +1,8 @@
+import { Institute } from './institute.model';
 import mongoose from "mongoose";
 
 const adminSchema = new mongoose.Schema({
+  institute: { type: mongoose.Schema.Types.ObjectId, ref: "Institute", required: true },
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
