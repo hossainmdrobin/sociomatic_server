@@ -3,6 +3,7 @@ import Product from "./../../models/products.model";
 
 // Create a product
 export const createProduct = async (req: Request, res: Response) => {
+  console.log(req.body)
   const images: string[] = [];
   const videos: string[] = [];
   (req.files as Express.Multer.File[])?.forEach(file => {

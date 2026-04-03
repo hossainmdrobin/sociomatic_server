@@ -92,7 +92,6 @@ export const loginWithEmail = async (req: Request, res: Response) => {
 
   try {
     const user = await Admin.findOne({ email }); // Replace with your ORM query
-
     if (!user) {
       res.status(401).json({
         message: 'You are not signed up. Please signup first.',
@@ -101,6 +100,7 @@ export const loginWithEmail = async (req: Request, res: Response) => {
       });
       return;
     }
+    
 
     if (user) {
       const isMatch = await bcrypt.compare(password, user.password);
@@ -112,6 +112,7 @@ export const loginWithEmail = async (req: Request, res: Response) => {
         });
         return;
       }
+
 
       const token = jwt.sign({ _id: user._id, email: user.email, roll: user.roll,institute: user.institute }, process.env.JWT_SECRET || "", { expiresIn: '7d' });
 
