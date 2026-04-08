@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 const postSchema = new mongoose.Schema({
     socialId: { type: String, required: false },
+    campaign:{type:mongoose.Schema.Types.ObjectId,ref:"Campaign",required:false},
     admin: { type: mongoose.Schema.Types.ObjectId, ref: "Admin", required: true },
     creator: { type: mongoose.Schema.Types.ObjectId, ref: "Admin", required: true },
     editor: [{ type: mongoose.Schema.Types.ObjectId, ref: "Admin", required: false }],

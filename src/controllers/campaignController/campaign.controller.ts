@@ -3,19 +3,21 @@ import Campaign, { ICampaign } from "../../models/campaign.model";
 
 export const createCampaign = async (req: Request, res: Response): Promise<void> => {
     try {
-        const campaign = new Campaign(req.body);
+        const campaign = new Campaign({...req.body, user: req.user._id,institute: req.user.institute} as ICampaign);
         const savedCampaign = await campaign.save();
         res.status(201).json(savedCampaign);
     } catch (error) {
+        console.log(error)
         res.status(400).json({ message: "Error creating campaign", error });
     }
 };
 
 export const getAllCampaigns = async (req: Request, res: Response): Promise<void> => {
     try {
-        const campaigns = await Campaign.find().populate("user").populate("products");
+        const campaigns = await Campaign.find({ institute: req.user.institute }).populate("user").populate("products");
         res.status(200).json(campaigns);
     } catch (error) {
+        console.log(error)
         res.status(500).json({ message: "Error fetching campaigns", error });
     }
 };

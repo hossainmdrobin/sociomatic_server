@@ -3,10 +3,12 @@ import mongoose, { Schema, Document } from "mongoose";
 export interface ICampaign extends Document {
     name: string;
     user: mongoose.Types.ObjectId;
+    institute: mongoose.Types.ObjectId;
 
     // Core inputs
     goals: string; // e.g. "Increase sales", "Brand awareness"
     description?: string;
+    startsFrom: Date;
 
     products: mongoose.Types.ObjectId[];
 
@@ -41,10 +43,18 @@ const campaignSchema = new Schema<ICampaign>(
             type: String,
             required: true,
         },
-
+        startsFrom: {
+            type: Date,
+            required: false,
+        },
+        institute: {
+            type: Schema.Types.ObjectId,
+            ref: "Institute",
+            required: true,
+        },
         user: {
             type: Schema.Types.ObjectId,
-            ref: "User",
+            ref: "Admin",
             required: true,
         },
 
@@ -83,7 +93,7 @@ const campaignSchema = new Schema<ICampaign>(
         status: {
             type: String,
             enum: ["draft", "active", "completed", "paused"],
-            default: "draft",
+            default: "active",
         },
 
         stats: {

@@ -13,6 +13,7 @@ import instituteRoutes from "./routes/institute/institute.routes";
 import productRoutes from "./routes/product/product.routes";
 import promptRoutes from "./routes/prompt/prompt.routes"
 import campaignRoutes from "./routes/campaign/campaign.routes";
+import campaignPlanRoutes from "./routes/campaignPlan/plan.routes";
 
 // DB connections
 import { connectDB } from "./dataBase/connection";
@@ -39,6 +40,7 @@ app.use("/api/institute", instituteRoutes);
 app.use("/api/product", productRoutes);
 app.use("/api/prompt",promptRoutes)
 app.use("/api/campaigns", campaignRoutes)
+app.use("/api/campaign-plans", campaignPlanRoutes)
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Server is running...");

@@ -1,4 +1,3 @@
-import { Institute } from './institute.model';
 import mongoose from "mongoose";
 
 const adminSchema = new mongoose.Schema({

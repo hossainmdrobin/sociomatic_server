@@ -112,3 +112,13 @@ export const savePostWithFiles = async (req: Request, res: Response) => {
         res.status(500).json({ message: "Server error", seccess: false, error: e });
     }
 }
+
+export const getPostByCampaign = async (req: Request, res: Response) => {
+    const {institute} = req.user;
+    try {
+        const posts = await Post.find({ institute, campaign: req.params.id }).populate("creator").populate("editor").populate("account").sort({ createdAt: -1 });
+        res.status(200).json({ message: "Posts fetched successfully", success: true, data: posts });
+    } catch (e) {
+        res.status(500).json({ message: "Server error", seccess: false, error: e });
+    }
+}
