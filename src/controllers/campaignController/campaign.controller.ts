@@ -1,10 +1,14 @@
 import { Request, Response } from "express";
 import Campaign, { ICampaign } from "../../models/campaign.model";
+import { generatePlan } from "./helpers";
 
 export const createCampaign = async (req: Request, res: Response): Promise<void> => {
     try {
         const campaign = new Campaign({...req.body, user: req.user._id,institute: req.user.institute} as ICampaign);
         const savedCampaign = await campaign.save();
+        const plan = await generatePlan(String(savedCampaign._id));
+
+        
         res.status(201).json(savedCampaign);
     } catch (error) {
         console.log(error)
