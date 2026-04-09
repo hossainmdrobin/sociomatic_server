@@ -1,19 +1,17 @@
 export const generatorPlanPrompt = (campaign: any) => {
-    const { name, goals, startsFrom, duration, postsPerDay, platforms, tone } = campaign
-    return `
+  const { name, goals, startsFrom, duration, postsPerDay, platforms, tone } = campaign
+  return `
 You are a professional social media marketing strategist.
 
-Your task is to generate a complete social media post plan based on the campaign data provided for ${duration} days, starting from ${startsFrom}. The campaign's main goal is: "${goals}". The tone of the content should be "${tone}". The campaign will run on the following platforms: ${JSON.stringify(platforms, null, 2)}.Each day you will do ${postsPerDay} posts of different types.
+Your task is to generate a complete social media post plan based on the campaign data provided for ${duration} days, starting from ${startsFrom}. The campaign's main goal is: ${goals}. The tone of the content should be "${tone}". The campaign will run on the following platforms: facebook.Each day you will do ${postsPerDay} posts of different types.
 
 ### Campaign Details:
 - Campaign Name: ${name}
 - Goal: ${goals}
-- Description: {{description}}
 - Start Date: ${startsFrom}
 - Duration (days): ${duration}
 - Posts Per Day: ${postsPerDay} (Of different types)
-- Platforms: ${JSON.stringify(platforms, null, 2)}
-- Tone: ${tone}
+- Platforms: facebook, instagram, linkedin, twitter, youtube
 
 ### Product Data:
 ${JSON.stringify(campaign.products, null, 2)}
@@ -36,32 +34,26 @@ ${JSON.stringify(campaign.products, null, 2)}
    - Storytelling
 
 5. Adapt posts for the given platforms (Facebook, Instagram, LinkedIn, etc.)
-6. Maintain consistent tone: "{{tone}}"
-7. Content should align with the campaign goal: "{{goals}}"
+6. Maintain consistent tone: professional, friendly, humorous, etc. (as per campaign data)
+7. Content should align with the campaign goal: ${goals}
 
 ---
 
 ### Output Format (STRICT JSON ONLY):
-
+[
 {
-  "plan": [
-    {
-      "day": 1,
-      "date": "YYYY-MM-DD",
-      "posts": [
-        {
-          "type": "product_showcase | educational | promotional | engagement | testimonial | etc",
-          "platform": "facebook",
-          "title": "short catchy title",
-          "caption": "full post caption",
-          "hashtags": ["#tag1", "#tag2"],
-          "cta": "call to action",
-          "mediaSuggestion": "image | carousel | video | reel idea"
-        }
-      ]
-    }
-  ]
+  "text": "Check out our latest collection of summer essentials! ☀️ #Fashion #Summer2026",
+  "images": [
+    "https://example.com/images/summer-post-1.jpg",
+    "https://example.com/images/summer-post-2.jpg"
+  ],
+  "videos": ["https://example.com/images/summer-post-2.mp4"],
+  "platform": "facebook",
+  "budget": 50.5,
+  "scheduledAt": "2026-05-01T10:00:00.000Z",
+  "tags": ["summer", "new-arrival"],
 }
+]
 
 ---
 
@@ -71,7 +63,12 @@ ${JSON.stringify(campaign.products, null, 2)}
 - Make captions realistic and human-like
 - Vary writing style to avoid repetition
 - Ensure all days are filled (${duration} days total)
+- If you need images or videos, use the images url in product data or you can do text-only posts
 
-Now generate the campaign plan.
+Suggestions:
+- You can categorize products by price, type, or any other attribute to create diverse content.
+- First day posts can be announcement of all products togather(include photo), then you can do product showcase for each product in the following days, and then you can do educational content about the products, and then you can do engagement posts like polls or questions related to the products, and then you can do promotional posts with offers or discounts, and then you can do storytelling posts that tell a story about the brand or the products.
+
+Now generate the campaign plan for day 1.
 `
 }

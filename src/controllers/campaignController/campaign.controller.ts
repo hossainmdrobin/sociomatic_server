@@ -1,14 +1,22 @@
 import { Request, Response } from "express";
 import Campaign, { ICampaign } from "../../models/campaign.model";
 import { generatePlan } from "./helpers";
+import { Post } from "../../models/post.model";
 
 export const createCampaign = async (req: Request, res: Response): Promise<void> => {
     try {
         const campaign = new Campaign({...req.body, user: req.user._id,institute: req.user.institute} as ICampaign);
         const savedCampaign = await campaign.save();
         const plan = await generatePlan(String(savedCampaign._id));
+        const readyPlan = plan.map((p)=>({
+            ...p,
+            campaign: savedCampaign._id,
+            admin: req.user._id,
+            creator: req.user._id,
+            institute: req.user.institute,
+        }))
 
-        
+        await Post.insertMany(readyPlan);        
         res.status(201).json(savedCampaign);
     } catch (error) {
         console.log(error)
@@ -77,6 +85,7 @@ export const updateCampaign = async (req: Request, res: Response): Promise<void>
 export const deleteCampaign = async (req: Request, res: Response): Promise<void> => {
     try {
         const campaign = await Campaign.findByIdAndDelete(req.params.id);
+        await Post.deleteMany({ campaign: req.params.id });
         
         if (!campaign) {
             res.status(404).json({ message: "Campaign not found" });
