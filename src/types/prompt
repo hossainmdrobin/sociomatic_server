@@ -1,0 +1,37 @@
+export type Platform =
+  | "facebook"
+  | "instagram"
+  | "x"
+  | "linkedin"
+  | "pinterest";
+
+export type Tone =
+  | "professional"
+  | "friendly"
+  | "sales"
+  | "motivational"
+  | "humorous";
+
+export type PostLength = "small" | "medium" | "large";
+
+export type Language =
+  | "bangla"
+  | "english"
+  | "hindi"
+  | "arabic";
+
+export type PostType =
+  | "product"
+  | "educational"
+  | "lifestyle"
+  | "story"
+  | "promotion";
+
+export interface GeneratePostBody {
+  platform: Platform;
+  tone: Tone;
+  length: PostLength;
+  language: Language;
+  postType: PostType;
+  productId?: string;
+}

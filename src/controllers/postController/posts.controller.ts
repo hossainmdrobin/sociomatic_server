@@ -94,6 +94,7 @@ export const createPostNow = async (req: Request, res: Response) => {
 
 export const savePostWithFiles = async (req: Request, res: Response) => {
     const admin = req.user.roll == "admin" ? req.user._id : req.user.admin;
+    console.log(req.body)
     const images: string[] = [];
     const videos: string[] = [];
     (req.files as Express.Multer.File[])?.forEach(file => {
@@ -108,6 +109,16 @@ export const savePostWithFiles = async (req: Request, res: Response) => {
 
     } catch (e) {
         console.log(e)
+        res.status(500).json({ message: "Server error", seccess: false, error: e });
+    }
+}
+
+export const getPostByCampaign = async (req: Request, res: Response) => {
+    const {institute} = req.user;
+    try {
+        const posts = await Post.find({ institute, campaign: req.params.id }).populate("creator").populate("editor").populate("account").sort({ createdAt: -1 });
+        res.status(200).json({ message: "Posts fetched successfully", success: true, data: posts });
+    } catch (e) {
         res.status(500).json({ message: "Server error", seccess: false, error: e });
     }
 }

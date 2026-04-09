@@ -8,7 +8,12 @@ import morgan from "morgan";
 // routes imports
 import authRoutes from './routes/auth.routes'
 import accountRoutes from './routes/accounts/accouts.routes';
-import postRoutes from './routes/posts/posts.routes'
+import postRoutes from './routes/posts/posts.routes';
+import instituteRoutes from "./routes/institute/institute.routes";
+import productRoutes from "./routes/product/product.routes";
+import promptRoutes from "./routes/prompt/prompt.routes"
+import campaignRoutes from "./routes/campaign/campaign.routes";
+import campaignPlanRoutes from "./routes/campaignPlan/plan.routes";
 
 // DB connections
 import { connectDB } from "./dataBase/connection";
@@ -31,6 +36,11 @@ app.use(morgan("dev"));
 app.use("/api/auth", authRoutes);
 app.use("/api/accounts", accountRoutes);
 app.use("/api/posts", postRoutes);
+app.use("/api/institute", instituteRoutes);
+app.use("/api/product", productRoutes);
+app.use("/api/prompt",promptRoutes)
+app.use("/api/campaigns", campaignRoutes)
+app.use("/api/campaign-plans", campaignPlanRoutes)
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Server is running...");
