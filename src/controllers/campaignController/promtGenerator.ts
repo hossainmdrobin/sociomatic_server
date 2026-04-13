@@ -1,5 +1,5 @@
 export const generatorPlanPrompt = (campaign: any) => {
-  const { name, goals, startsFrom, duration, postsPerDay, platforms, tone } = campaign
+  const { name, goals, startsFrom, duration, postsPerDay, tone } = campaign
   return `
 You are a professional social media marketing strategist.
 
@@ -11,7 +11,7 @@ Your task is to generate a complete social media post plan based on the campaign
 - Start Date: ${startsFrom}
 - Duration (days): ${duration}
 - Posts Per Day: ${postsPerDay} (Of different types)
-- Platforms: facebook, instagram, linkedin, twitter, youtube
+- Platforms: facebook, instagram, linkedin, twitter
 
 ### Product Data:
 ${JSON.stringify(campaign.products, null, 2)}
@@ -58,6 +58,7 @@ ${JSON.stringify(campaign.products, null, 2)}
 ---
 
 ### Important Rules:
+- Generate the text in ${campaign.language || "English"} language.
 - DO NOT return anything except JSON
 - DO NOT include explanations
 - Make captions realistic and human-like

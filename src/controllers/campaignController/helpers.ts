@@ -8,7 +8,6 @@ export const generatePlan = async (campaign_id: string) => {
     try {
         const campaign = await campaignModel.findById(campaign_id).populate("products");
         const prompt = generatorPlanPrompt(campaign)
-        console.log(prompt)
         const message: { role: "user" | "assistant"; content: string }[] = [
             {
                 role: "user",

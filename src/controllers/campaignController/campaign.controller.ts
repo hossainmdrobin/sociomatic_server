@@ -14,6 +14,7 @@ export const createCampaign = async (req: Request, res: Response): Promise<void>
             admin: req.user._id,
             creator: req.user._id,
             institute: req.user.institute,
+            account:savedCampaign.account,
         }))
 
         await Post.insertMany(readyPlan);        
