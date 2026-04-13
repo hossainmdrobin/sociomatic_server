@@ -100,7 +100,7 @@ export const loginWithEmail = async (req: Request, res: Response) => {
       });
       return;
     }
-    
+
 
     if (user) {
       const isMatch = await bcrypt.compare(password, user.password);
@@ -114,7 +114,7 @@ export const loginWithEmail = async (req: Request, res: Response) => {
       }
 
 
-      const token = jwt.sign({ _id: user._id, email: user.email, roll: user.roll,institute: user.institute }, process.env.JWT_SECRET || "", { expiresIn: '7d' });
+      const token = jwt.sign({ _id: user._id, email: user.email, roll: user.roll, institute: user.institute }, process.env.JWT_SECRET || "", { expiresIn: '7d' });
 
       res.status(200).json({
         message: 'Logged in successfully.',
@@ -148,6 +148,30 @@ export const getUserInfo = async (req: Request, res: Response) => {
     res.status(200).json({ success: true, data: user, message: "User info fetched successfully" })
   } catch (error) {
     console.error("Error fetching user info:", error);
+    res.status(500).json({ success: false, message: "Some thing went wrong", error })
+  }
+}
+
+export const getPages = async (req: Request, res: Response) => {
+  try {
+    const user = await Admin.findById(req.user._id).populate('accounts');
+    res.status(200).json({ success: true, data: user?.fb_pages, message: "User info fetched successfully" })
+  } catch (error) {
+    console.error("Error fetching user info:", error);
+    res.status(500).json({ success: false, message: "Some thing went wrong", error })
+  }
+}
+// update user info
+export const updateUserInfo = async (req: Request, res: Response) => {
+  try {
+    const user = await Admin.findByIdAndUpdate(req.user._id, req.body, { new: true });
+    if (!user) {
+      res.status(404).json({ success: false, message: "User not found" });
+      return;
+    }
+    res.status(200).json({ success: true, data: user, message: "User info updated successfully" })
+  }catch (error) {
+    console.error("Error updating user info:", error);
     res.status(500).json({ success: false, message: "Some thing went wrong", error })
   }
 }

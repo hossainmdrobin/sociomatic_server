@@ -2,18 +2,19 @@ import mongoose from "mongoose";
 
 const adminSchema = new mongoose.Schema({
   institute: { type: mongoose.Schema.Types.ObjectId, ref: "Institute", required: true },
+  fb_pages: [{ id: String, name: String, picture: String, access_token: String }],
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   otp: { type: Number, required: false },
   otpExpires: { type: Date, required: false },
   isVerified: { type: Boolean, default: false },
-  roll:{ type: String, enum: ["admin", "user"], default: "admin" },
-  accounts:[{
+  roll: { type: String, enum: ["admin", "user"], default: "admin" },
+  accounts: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: "Account"
   }]
-},{
+}, {
   timestamps: true
 });
 

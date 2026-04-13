@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
 const accountSchema = new mongoose.Schema({
+  institute:{ type: mongoose.Schema.Types.ObjectId, ref: "Institute", required: true },
   socialId: { type: String, required: true }, 
   name: { type: String, required: true },
   photo: { type: String, required: false },

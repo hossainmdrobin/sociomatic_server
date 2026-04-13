@@ -92,13 +92,13 @@ export const getInstitute = async (req: Request, res: Response) => {
 
 export const updateInstitute = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const {institute} = req.user;
 
-    const institute = await Institute.findByIdAndUpdate(id, req.body, {
+    const updatedInstitute = await Institute.findByIdAndUpdate(institute, req.body, {
       new: true,
     });
 
-    if (!institute) {
+    if (!updatedInstitute) {
       return res.status(404).json({
         success: false,
         message: "Institute not found",
