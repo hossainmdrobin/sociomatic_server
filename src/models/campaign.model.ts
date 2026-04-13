@@ -4,6 +4,8 @@ export interface ICampaign extends Document {
     name: string;
     user: mongoose.Types.ObjectId;
     institute: mongoose.Types.ObjectId;
+    account: mongoose.Types.ObjectId,
+    language?:string
 
     // Core inputs
     goals: string; // e.g. "Increase sales", "Brand awareness"
@@ -52,6 +54,8 @@ const campaignSchema = new Schema<ICampaign>(
             ref: "Institute",
             required: true,
         },
+        account:{type:Schema.Types.ObjectId, ref:"Account", required:true},
+        language:{type:String},
         user: {
             type: Schema.Types.ObjectId,
             ref: "Admin",
