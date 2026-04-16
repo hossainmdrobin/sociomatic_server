@@ -23,6 +23,9 @@ import agenda from "./agendaConfig";
 import schedulePost from "./jobs/schedulePost";
 import defineFacebookJob from "./jobs/postToFacebook";
 import { publishPost } from "./jobs/publishPost";
+import defineCampaignPlanJob from "./jobs/campaignPlan.job";
+import definePostBatchJob from "./jobs/postBatch.job";
+import defineFinalizeCampaignJob from "./jobs/finalizeCampaign.job";
 
 dotenv.config();
 
@@ -65,6 +68,12 @@ agenda.on('ready', () => {
   publishPost(agenda)
   defineFacebookJob(agenda);
   await agenda.every('30 seconds', 'schedule post');
+  
+  // Register campaign generation jobs
+  defineCampaignPlanJob();
+  definePostBatchJob();
+  defineFinalizeCampaignJob();
+  console.log("Campaign generation jobs registered");
 })();
 
 

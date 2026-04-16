@@ -20,7 +20,7 @@ export interface ICampaign extends Document {
     platforms: string[];
 
     // Status tracking
-    status: "draft" | "active" | "completed" | "paused";
+    status: "draft" | "active" | "completed" | "paused" | "planning" | "generating" | "failed";
 
     // Analytics (future use)
     stats?: {
@@ -30,6 +30,13 @@ export interface ICampaign extends Document {
         clicks?: number;
         conversions?: number;
     };
+
+    // Generation tracking
+    plan?: any[];
+    expectedPostCount?: number;
+    generatedPostCount?: number;
+    errorMessage?: string;
+    warningMessage?: string;
 
     // Optional improvements
     tone?: string; // optional AI tone control
@@ -96,7 +103,7 @@ const campaignSchema = new Schema<ICampaign>(
 
         status: {
             type: String,
-            enum: ["draft", "active", "completed", "paused"],
+            enum: ["draft", "active", "completed", "paused", "planning", "generating", "failed"],
             default: "active",
         },
 
@@ -106,6 +113,31 @@ const campaignSchema = new Schema<ICampaign>(
             engagement: Number,
             clicks: Number,
             conversions: Number,
+        },
+
+        plan: {
+            type: Schema.Types.Mixed,
+            required: false,
+        },
+
+        expectedPostCount: {
+            type: Number,
+            required: false,
+        },
+
+        generatedPostCount: {
+            type: Number,
+            required: false,
+        },
+
+        errorMessage: {
+            type: String,
+            required: false,
+        },
+
+        warningMessage: {
+            type: String,
+            required: false,
         },
 
         tone: String,

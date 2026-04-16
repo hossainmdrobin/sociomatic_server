@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import Campaign, { ICampaign } from "../../models/campaign.model";
 import { generatePlan } from "./helpers";
 import { Post } from "../../models/post.model";
+import campaignService from "../../services/campaign.service";
 
 export const createCampaign = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -144,5 +145,58 @@ export const updateCampaignStats = async (req: Request, res: Response): Promise<
         res.status(200).json(campaign);
     } catch (error) {
         res.status(400).json({ message: "Error updating campaign stats", error });
+    }
+};
+
+export const generateCampaignPosts = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { id: campaignId } = req.params;
+        
+        await campaignService.startGeneration(campaignId);
+        
+        res.status(202).json({
+            success: true,
+            message: "Post generation started",
+            campaignId,
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({ message: "Error starting generation", error });
+    }
+};
+
+export const getCampaignGenerationStatus = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { id: campaignId } = req.params;
+        const status = await campaignService.getStatus(campaignId);
+        
+        res.json({
+            success: true,
+            data: status,
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Error getting status", error });
+    }
+};
+
+export const getCampaignPosts = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { id: campaignId } = req.params;
+        const { limit, skip } = req.query;
+        
+        const posts = await campaignService.getPosts(campaignId, {
+            limit: limit ? parseInt(limit as string) : undefined,
+            skip: skip ? parseInt(skip as string) : undefined,
+        });
+        
+        res.json({
+            success: true,
+            data: posts,
+            count: posts.length,
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Error getting posts", error });
     }
 };
