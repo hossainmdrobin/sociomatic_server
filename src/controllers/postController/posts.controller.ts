@@ -9,7 +9,7 @@ export const addTextPost = async (req: Request, res: Response) => {
     const admin = req.user.roll == "admin" ? req.user._id : req.user.admin;
 
     try {
-        const newPost = new Post({ ...req.body, admin, creator: req.user._id, editor: req.user._id, stage: req.body.stage || "saved" })
+        const newPost = new Post({ ...req.body, admin, institute: req.user.institute, creator: req.user._id, editor: req.user._id, stage: req.body.stage || "saved" })
         await newPost.save();
         res.status(200).json({ message: "Post created successfully", success: true, data: newPost });
 
@@ -103,7 +103,7 @@ export const savePostWithFiles = async (req: Request, res: Response) => {
     });
 
     try {
-        const newPost = new Post({ ...req.body, images, videos, admin, creator: req.user._id, editor: req.user._id, stage: req.body.stage || "saved" })
+        const newPost = new Post({ ...req.body, images, videos, admin, creator: req.user._id, editor: req.user._id,institute: req.user.institute, stage: req.body.stage || "saved" })
         await newPost.save();
         res.status(200).json({ message: "Post created successfully", success: true, data: newPost });
 
@@ -114,7 +114,7 @@ export const savePostWithFiles = async (req: Request, res: Response) => {
 }
 
 export const getPostByCampaign = async (req: Request, res: Response) => {
-    const {institute} = req.user;
+    const { institute } = req.user;
     try {
         const posts = await Post.find({ institute, campaign: req.params.id }).populate("creator").populate("editor").populate("account").sort({ createdAt: -1 });
         res.status(200).json({ message: "Posts fetched successfully", success: true, data: posts });

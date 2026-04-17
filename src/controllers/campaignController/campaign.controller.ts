@@ -8,18 +8,19 @@ export const createCampaign = async (req: Request, res: Response): Promise<void>
     try {
         const campaign = new Campaign({...req.body, user: req.user._id,institute: req.user.institute} as ICampaign);
         const savedCampaign = await campaign.save();
-        // const plan = await generatePlan(String(savedCampaign._id));
-         await campaignService.startGeneration(String(savedCampaign._id));
-        // const readyPlan = plan.map((p)=>({
-        //     ...p,
-        //     campaign: savedCampaign._id,
-        //     admin: req.user._id,
-        //     creator: req.user._id,
-        //     institute: req.user.institute,
-        //     account:savedCampaign.account,
-        // }))
+        const plan = await generatePlan(String(savedCampaign._id));
+        //  await campaignService.startGeneration(String(savedCampaign._id));
+        const readyPlan = plan.map((p)=>({
+            ...p,
+            campaign: savedCampaign._id,
+            admin: req.user._id,
+            creator: req.user._id,
+            institute: req.user.institute,
+            account:savedCampaign.account,
+            stage:"saved"
+        }))
 
-        // await Post.insertMany(readyPlan);        
+        await Post.insertMany(readyPlan);        
         res.status(201).json(savedCampaign);
     } catch (error) {
         console.log(error)

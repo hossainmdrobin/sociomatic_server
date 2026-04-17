@@ -41,7 +41,7 @@ app.use("/api/accounts", accountRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/institute", instituteRoutes);
 app.use("/api/product", productRoutes);
-app.use("/api/prompt",promptRoutes)
+app.use("/api/prompt", promptRoutes)
 app.use("/api/campaigns", campaignRoutes)
 app.use("/api/campaign-plans", campaignPlanRoutes)
 
@@ -61,19 +61,18 @@ agenda.on('ready', () => {
 });
 
 // Starting agenda after the database connection
-(async() => {
+(async () => {
   await agenda.start();
   console.log("Agenda started");
   schedulePost(agenda);
   publishPost(agenda)
   defineFacebookJob(agenda);
   await agenda.every('30 seconds', 'schedule post');
-  
+
   // Register campaign generation jobs
   defineCampaignPlanJob();
   definePostBatchJob();
   defineFinalizeCampaignJob();
-  console.log("Campaign generation jobs registered");
 })();
 
 
