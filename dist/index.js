@@ -21,6 +21,11 @@ const morgan_1 = __importDefault(require("morgan"));
 const auth_routes_1 = __importDefault(require("./routes/auth.routes"));
 const accouts_routes_1 = __importDefault(require("./routes/accounts/accouts.routes"));
 const posts_routes_1 = __importDefault(require("./routes/posts/posts.routes"));
+const institute_routes_1 = __importDefault(require("./routes/institute/institute.routes"));
+const product_routes_1 = __importDefault(require("./routes/product/product.routes"));
+const prompt_routes_1 = __importDefault(require("./routes/prompt/prompt.routes"));
+const campaign_routes_1 = __importDefault(require("./routes/campaign/campaign.routes"));
+const plan_routes_1 = __importDefault(require("./routes/campaignPlan/plan.routes"));
 // DB connections
 const connection_1 = require("./dataBase/connection");
 // Custom functions
@@ -28,6 +33,9 @@ const agendaConfig_1 = __importDefault(require("./agendaConfig"));
 const schedulePost_1 = __importDefault(require("./jobs/schedulePost"));
 const postToFacebook_1 = __importDefault(require("./jobs/postToFacebook"));
 const publishPost_1 = require("./jobs/publishPost");
+const campaignPlan_job_1 = __importDefault(require("./jobs/campaignPlan.job"));
+const postBatch_job_1 = __importDefault(require("./jobs/postBatch.job"));
+const finalizeCampaign_job_1 = __importDefault(require("./jobs/finalizeCampaign.job"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 5000;
@@ -37,6 +45,11 @@ app.use((0, morgan_1.default)("dev"));
 app.use("/api/auth", auth_routes_1.default);
 app.use("/api/accounts", accouts_routes_1.default);
 app.use("/api/posts", posts_routes_1.default);
+app.use("/api/institute", institute_routes_1.default);
+app.use("/api/product", product_routes_1.default);
+app.use("/api/prompt", prompt_routes_1.default);
+app.use("/api/campaigns", campaign_routes_1.default);
+app.use("/api/campaign-plans", plan_routes_1.default);
 app.get("/", (req, res) => {
     res.send("Server is running...");
 });
@@ -56,6 +69,11 @@ agendaConfig_1.default.on('ready', () => {
     (0, publishPost_1.publishPost)(agendaConfig_1.default);
     (0, postToFacebook_1.default)(agendaConfig_1.default);
     yield agendaConfig_1.default.every('30 seconds', 'schedule post');
+    // Register campaign generation jobs
+    (0, campaignPlan_job_1.default)();
+    (0, postBatch_job_1.default)();
+    (0, finalizeCampaign_job_1.default)();
+    console.log("Campaign generation jobs registered");
 }))();
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);

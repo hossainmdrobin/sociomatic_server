@@ -1,0 +1,18 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const campaign_controller_1 = require("./../../controllers/campaignController/campaign.controller");
+const auth_middleware_1 = require("../../middleware/auth.middleware");
+const router = (0, express_1.Router)();
+router.post("/", auth_middleware_1.authenticateToken, campaign_controller_1.createCampaign);
+router.get("/", auth_middleware_1.authenticateToken, campaign_controller_1.getAllCampaigns);
+router.get("/user/:userId", auth_middleware_1.authenticateToken, campaign_controller_1.getCampaignsByUser);
+router.get("/:id", auth_middleware_1.authenticateToken, campaign_controller_1.getCampaignById);
+router.put("/:id", auth_middleware_1.authenticateToken, campaign_controller_1.updateCampaign);
+router.delete("/:id", auth_middleware_1.authenticateToken, campaign_controller_1.deleteCampaign);
+router.patch("/:id/status", auth_middleware_1.authenticateToken, campaign_controller_1.updateCampaignStatus);
+router.patch("/:id/stats", auth_middleware_1.authenticateToken, campaign_controller_1.updateCampaignStats);
+router.post("/:id/generate", auth_middleware_1.authenticateToken, campaign_controller_1.generateCampaignPosts);
+router.get("/:id/status", auth_middleware_1.authenticateToken, campaign_controller_1.getCampaignGenerationStatus);
+router.get("/:id/posts", auth_middleware_1.authenticateToken, campaign_controller_1.getCampaignPosts);
+exports.default = router;

@@ -1,4 +1,3 @@
-import { Job } from "agenda";
 import axios from "axios";
 import { Post } from './../models/post.model';
 import dotenv from "dotenv";
@@ -6,6 +5,15 @@ import { Document, Types } from "mongoose";
 import { Account } from "models/account.model";
 
 const GRAPH = "https://graph.facebook.com/v19.0";
+
+type Job<T = unknown> = {
+  attrs: {
+    data?: T;
+    unique?: boolean;
+    uniqueOpts?: Record<string, unknown>;
+    disable?: boolean;
+  };
+};
 
 interface Account extends Document {
     token: string;
@@ -15,7 +23,8 @@ dotenv.config();
 
 export default function defineFacebookJob(agenda: any) {
     agenda.define("post to facebook", { concurrency: 5 }, async (job: Job) => {
-        const { postId } = job.attrs.data;
+        const data = job.attrs.data as any;
+        const postId = data?.postId;
 
         if (!postId) return;
 
