@@ -11,16 +11,22 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.publishPost = void 0;
 const postToFacebook_1 = require("./../services/facebook/postToFacebook");
+const postToYoutube_1 = require("../services/youtube/postToYoutube");
 const publishPost = (agenda) => __awaiter(void 0, void 0, void 0, function* () {
     agenda.define('publish post', { concurrency: 5 }, (job) => __awaiter(void 0, void 0, void 0, function* () {
         const { id, platform } = job.attrs.data;
-        console.log(`Publishing post with ID: ${id} and type: ${platform}`);
+        console.log(job.attrs.data);
+        console.log(`Publishing post with ID: ${id} and platform: ${platform}`);
         if (!id)
             return;
         if (!platform)
             return;
-        if (platform === "facebook") {
+        console.log("I am here ", platform == "facebook");
+        if (platform == "facebook") {
             yield (0, postToFacebook_1.postToFacebook)(id);
+        }
+        if (platform == "youtube") {
+            yield (0, postToYoutube_1.postToYoutube)(id);
         }
     }));
 });

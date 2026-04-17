@@ -4,6 +4,7 @@ import agenda from "../config/agenda";
 
 export class CampaignService {
   async startGeneration(campaignId: string): Promise<void> {
+    console.log("start generation for campaign:", campaignId);
     const campaign = await Campaign.findById(campaignId);
 
     if (!campaign) {

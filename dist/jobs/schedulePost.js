@@ -15,7 +15,6 @@ function schedulePost(agenda) {
     agenda.define('schedule post', { concurrency: 5 }, () => __awaiter(this, void 0, void 0, function* () {
         try {
             const posts = yield post_model_1.Post.find({ scheduledAt: { $lte: new Date() }, stage: "saved" });
-            console.log(`Found ${posts.length} posts to schedule.`);
             if (posts.length === 0)
                 return;
             for (const post of posts) {

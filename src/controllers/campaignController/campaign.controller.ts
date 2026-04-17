@@ -8,17 +8,18 @@ export const createCampaign = async (req: Request, res: Response): Promise<void>
     try {
         const campaign = new Campaign({...req.body, user: req.user._id,institute: req.user.institute} as ICampaign);
         const savedCampaign = await campaign.save();
-        const plan = await generatePlan(String(savedCampaign._id));
-        const readyPlan = plan.map((p)=>({
-            ...p,
-            campaign: savedCampaign._id,
-            admin: req.user._id,
-            creator: req.user._id,
-            institute: req.user.institute,
-            account:savedCampaign.account,
-        }))
+        // const plan = await generatePlan(String(savedCampaign._id));
+         await campaignService.startGeneration(String(savedCampaign._id));
+        // const readyPlan = plan.map((p)=>({
+        //     ...p,
+        //     campaign: savedCampaign._id,
+        //     admin: req.user._id,
+        //     creator: req.user._id,
+        //     institute: req.user.institute,
+        //     account:savedCampaign.account,
+        // }))
 
-        await Post.insertMany(readyPlan);        
+        // await Post.insertMany(readyPlan);        
         res.status(201).json(savedCampaign);
     } catch (error) {
         console.log(error)
@@ -150,7 +151,7 @@ export const updateCampaignStats = async (req: Request, res: Response): Promise<
 
 export const generateCampaignPosts = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { id: campaignId } = req.params;
+        const { id: campaignId } = req.params as { id: string };
         
         await campaignService.startGeneration(campaignId);
         
@@ -167,7 +168,7 @@ export const generateCampaignPosts = async (req: Request, res: Response): Promis
 
 export const getCampaignGenerationStatus = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { id: campaignId } = req.params;
+        const { id: campaignId } = req.params as { id: string };
         const status = await campaignService.getStatus(campaignId);
         
         res.json({
@@ -182,7 +183,7 @@ export const getCampaignGenerationStatus = async (req: Request, res: Response): 
 
 export const getCampaignPosts = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { id: campaignId } = req.params;
+        const { id: campaignId } = req.params as { id: string };
         const { limit, skip } = req.query;
         
         const posts = await campaignService.getPosts(campaignId, {

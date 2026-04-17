@@ -1,10 +1,18 @@
-import { Job } from "agenda";
 import { ICampaign } from "../models/campaign.model";
 import { executorAgent } from "../services/agents/executor.agent";
 import { Theme } from "../services/agents/planner.agent";
 import agenda from "../config/agenda";
 import Campaign from "../models/campaign.model";
 import { Post } from "../models/post.model";
+
+type Job<T = unknown> = {
+  attrs: {
+    data?: T;
+    unique?: boolean;
+    uniqueOpts?: Record<string, unknown>;
+    disable?: boolean;
+  };
+};
 
 interface PostBatchJobData {
   campaignId: string;
@@ -18,7 +26,11 @@ export function definePostBatchJob(): void {
     "generate-post-batch",
     { priority: "high", concurrency: 5 },
     async (job: Job<PostBatchJobData>) => {
-      const { campaignId, themes, batchIndex, totalBatches } = job.attrs.data;
+      const data = job.attrs.data!;
+      const campaignId = data?.campaignId;
+      const themes = data?.themes;
+      const batchIndex = data?.batchIndex;
+      const totalBatches = data?.totalBatches;
 
       console.log(`[PostBatchJob] Processing batch ${batchIndex + 1}/${totalBatches} for campaign: ${campaignId}`);
 

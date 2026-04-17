@@ -12,7 +12,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUserInfo = exports.loginWithEmail = exports.verifyOTP = exports.signup = void 0;
+exports.updateUserInfo = exports.getPages = exports.getUserInfo = exports.loginWithEmail = exports.verifyOTP = exports.signup = void 0;
+const institute_model_1 = require("./../models/institute.model");
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const admin_model_1 = require("../models/admin.model");
 const otp_util_1 = require("../utils/otp.util");
@@ -38,7 +39,8 @@ const signup = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         console.log("Generated OTP:", otp); // Log the generated OTP for debugging
         const otpExpires = new Date(Date.now() + 30 * 60 * 1000); // OTP expires in 5 mins
         // Save user with OTP
-        const newUser = new admin_model_1.Admin({ email, name, password: hashedPassword, otp, otpExpires });
+        const institute = new institute_model_1.Institute({});
+        const newUser = new admin_model_1.Admin({ institute: institute._id, email, name, password: hashedPassword, otp, otpExpires });
         yield newUser.save();
         // Send OTP via email
         yield (0, email_service_1.sendOTP)(email, otp);
@@ -111,7 +113,7 @@ const loginWithEmail = (req, res) => __awaiter(void 0, void 0, void 0, function*
                 });
                 return;
             }
-            const token = jsonwebtoken_1.default.sign({ _id: user._id, email: user.email, roll: user.roll }, process.env.JWT_SECRET || "", { expiresIn: '7d' });
+            const token = jsonwebtoken_1.default.sign({ _id: user._id, email: user.email, roll: user.roll, institute: user.institute }, process.env.JWT_SECRET || "", { expiresIn: '7d' });
             res.status(200).json({
                 message: 'Logged in successfully.',
                 success: true,
@@ -148,3 +150,30 @@ const getUserInfo = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 exports.getUserInfo = getUserInfo;
+const getPages = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const user = yield admin_model_1.Admin.findById(req.user._id).populate('accounts');
+        res.status(200).json({ success: true, data: user === null || user === void 0 ? void 0 : user.fb_pages, message: "User info fetched successfully" });
+    }
+    catch (error) {
+        console.error("Error fetching user info:", error);
+        res.status(500).json({ success: false, message: "Some thing went wrong", error });
+    }
+});
+exports.getPages = getPages;
+// update user info
+const updateUserInfo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const user = yield admin_model_1.Admin.findByIdAndUpdate(req.user._id, req.body, { new: true });
+        if (!user) {
+            res.status(404).json({ success: false, message: "User not found" });
+            return;
+        }
+        res.status(200).json({ success: true, data: user, message: "User info updated successfully" });
+    }
+    catch (error) {
+        console.error("Error updating user info:", error);
+        res.status(500).json({ success: false, message: "Some thing went wrong", error });
+    }
+});
+exports.updateUserInfo = updateUserInfo;

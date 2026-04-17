@@ -16,11 +16,13 @@ exports.default = defineFacebookJob;
 const axios_1 = __importDefault(require("axios"));
 const post_model_1 = require("./../models/post.model");
 const dotenv_1 = __importDefault(require("dotenv"));
+const GRAPH = "https://graph.facebook.com/v19.0";
 dotenv_1.default.config();
 function defineFacebookJob(agenda) {
     agenda.define("post to facebook", { concurrency: 5 }, (job) => __awaiter(this, void 0, void 0, function* () {
         var _a, _b;
-        const { postId } = job.attrs.data;
+        const data = job.attrs.data;
+        const postId = data === null || data === void 0 ? void 0 : data.postId;
         if (!postId)
             return;
         const post = yield post_model_1.Post.findById(postId)
@@ -28,10 +30,20 @@ function defineFacebookJob(agenda) {
         if (!post || post.stage === "published")
             return;
         try {
+            const mediaIds = [];
+            for (const url of post.images) {
+                const res = yield axios_1.default.post(`${GRAPH}/${post.account.socialId}/photos`, {
+                    url,
+                    published: false,
+                    access_token: post.account.token,
+                });
+                mediaIds.push({ media_fbid: res.data.id });
+            }
             const url = "https://graph.facebook.com/v19.0/me/feed";
             const response = yield axios_1.default.post(url, null, {
                 params: {
                     message: post.text,
+                    attached_media: mediaIds,
                     access_token: (_a = post === null || post === void 0 ? void 0 : post.account) === null || _a === void 0 ? void 0 : _a.token, // Ensure you have the correct access token
                 },
             });

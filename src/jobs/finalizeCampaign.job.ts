@@ -1,7 +1,15 @@
-import { Job } from "agenda";
 import agenda from "../config/agenda";
 import Campaign from "../models/campaign.model";
 import { Post } from "../models/post.model";
+
+type Job<T = unknown> = {
+  attrs: {
+    data?: T;
+    unique?: boolean;
+    uniqueOpts?: Record<string, unknown>;
+    disable?: boolean;
+  };
+};
 
 interface FinalizeJobData {
   campaignId: string;
@@ -13,7 +21,9 @@ export function defineFinalizeCampaignJob(): void {
     "finalize-campaign",
     { priority: "normal", concurrency: 1 },
     async (job: Job<FinalizeJobData>) => {
-      const { campaignId, expectedBatches } = job.attrs.data;
+      const data = job.attrs.data!;
+      const campaignId = data?.campaignId;
+      const expectedBatches = data?.expectedBatches;
 
       console.log(`[FinalizeJob] Finalizing campaign: ${campaignId}`);
 

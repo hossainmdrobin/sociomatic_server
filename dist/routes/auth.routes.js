@@ -11,6 +11,8 @@ router.post("/signup", auth_controller_1.signup);
 router.post("/verify-email", auth_controller_1.verifyOTP);
 router.post("/login", auth_controller_1.loginWithEmail);
 router.get("/get-user-info", auth_middleware_1.authenticateToken, auth_controller_1.getUserInfo);
+router.put("/update", auth_middleware_1.authenticateToken, auth_controller_1.updateUserInfo);
+router.get("/fb_pages", auth_middleware_1.authenticateToken, auth_controller_1.getPages);
 // router.post("/send-otp", (req, res) => {});
 // router.post("change-password", (req, res) => {});
 exports.default = router;

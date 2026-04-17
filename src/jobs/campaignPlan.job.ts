@@ -1,8 +1,16 @@
-import { Job } from "agenda";
 import { ICampaign } from "../models/campaign.model";
-import { plannerAgent } from "./planner.agent";
+import { plannerAgent } from "../services/agents/planner.agent";
 import agenda from "../config/agenda";
 import Campaign from "../models/campaign.model";
+
+type Job<T = unknown> = {
+  attrs: {
+    data?: T;
+    unique?: boolean;
+    uniqueOpts?: Record<string, unknown>;
+    disable?: boolean;
+  };
+};
 
 interface CampaignPlanJobData {
   campaignId: string;
@@ -13,7 +21,8 @@ export function defineCampaignPlanJob(): void {
     "generate-campaign-plan",
     { priority: "high", concurrency: 1 },
     async (job: Job<CampaignPlanJobData>) => {
-      const { campaignId } = job.attrs.data;
+      const data = job.attrs.data!;
+      const campaignId = data?.campaignId;
 
       console.log(`[CampaignPlanJob] Starting plan generation for campaign: ${campaignId}`);
 

@@ -6,8 +6,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const agenda_1 = __importDefault(require("agenda"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
+const AgendaConstructor = typeof agenda_1.default === "function"
+    ? agenda_1.default
+    : agenda_1.default.Agenda || agenda_1.default.default;
 console.log(process.env.MONGODB_URI, 'consoling from agendaConfig.ts');
-const agenda = new agenda_1.default({
+const agenda = new AgendaConstructor({
     db: {
         address: process.env.MONGODB_URI || '',
         collection: 'agendaJobs'

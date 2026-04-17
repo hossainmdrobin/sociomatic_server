@@ -9,30 +9,27 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.removeAccount = exports.addAccount = void 0;
+exports.getAccountsByInstitute = exports.removeAccount = exports.addAccount = void 0;
 const account_model_1 = require("../../models/account.model");
 const admin_model_1 = require("./../../models/admin.model");
-const facebook_1 = require("./../../config/facebook");
 const addAccount = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { institute } = req.user;
     const { socialId, token } = req.body;
-    const fullUrl = `${(0, facebook_1.getFBGraphURL)()}?grant_type=fb_exchange_token&client_id=${(0, facebook_1.getAppId)()}&client_secret=${(0, facebook_1.getAppSecret)()}&fb_exchange_token=${token}`;
     try {
         const existingAccount = yield account_model_1.Account.findOne({ socialId });
         if (existingAccount) {
-            res.status(400).json({ message: "Account Already exists", success: false, data: {} });
+            return res.status(400).json({ message: "Account Already exists", success: false, data: {} });
         }
-        const long_live_data = yield fetch(fullUrl);
-        const long_live_data_json = yield long_live_data.json();
         req.body.addedBy = req.user._id;
-        req.body.expiresIn = long_live_data_json.expires_in;
-        req.body.accessToken = long_live_data_json.access_token;
-        const newAccount = new account_model_1.Account(Object.assign({}, req.body));
+        req.body.tokenExpires = new Date(Date.now() + 59 * 24 * 3600 * 1000);
+        const newAccount = new account_model_1.Account(Object.assign(Object.assign({}, req.body), { institute }));
         yield admin_model_1.Admin.findByIdAndUpdate(req.user._id, { $push: { accounts: newAccount._id } });
         yield newAccount.save();
-        res.status(200).json({ message: "Account created successfully", success: true, data: newAccount });
+        return res.status(200).json({ message: "Account created successfully", success: true, data: newAccount });
     }
     catch (error) {
-        res.status(500).json({ message: "Server error", seccess: false, error });
+        console.log(error);
+        return res.status(500).json({ message: "Server error", seccess: false, error });
     }
 });
 exports.addAccount = addAccount;
@@ -52,3 +49,19 @@ const removeAccount = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
 });
 exports.removeAccount = removeAccount;
+const getAccountsByInstitute = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { institute } = req.user;
+        const accounts = yield account_model_1.Account.find({ institute });
+        if (!accounts) {
+            res.status(404).json({ message: "No accounts found for this institute", success: false, data: [] });
+            return;
+        }
+        res.status(200).json({ message: "Accounts retrieved successfully", success: true, data: accounts });
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Server error", seccess: false, error });
+    }
+});
+exports.getAccountsByInstitute = getAccountsByInstitute;
