@@ -22,6 +22,7 @@ export class ValidatorAgent {
     let result = parseJSON<T>(rawOutput);
 
     if (result.success && this.validateSchema(result.data, schema)) {
+      console.log("Initial validation successful");
       return result;
     }
 
@@ -29,10 +30,12 @@ export class ValidatorAgent {
     result = parseJSON<T>(cleaned);
 
     if (result.success && this.validateSchema(result.data, schema)) {
+      console.log("Validation successful after cleaning",result.data);
       return result;
     }
 
     if (this.config.maxRetries > 0) {
+      console.log("Attempting to fix JSON with LLM");
       return await this.fixWithLLM(rawOutput, schema);
     }
 

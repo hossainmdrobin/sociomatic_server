@@ -26,7 +26,6 @@ export class PlannerAgent {
   async createPlan(campaign: ICampaign): Promise<CampaignPlan> {
     const prompt = this.buildPrompt(campaign);
     const rawOutput = await llmService.completeWithRetry(prompt);
-
     const result = await validatorAgent.validate<Theme[]>(
       rawOutput,
       { type: "array", items: { type: "object", properties: { day: {}, theme: {} } } }
@@ -35,6 +34,7 @@ export class PlannerAgent {
     if (!result.success || !result.data) {
       throw new Error(`Failed to generate plan: ${result.error}`);
     }
+    console.log(result);
 
     const themes = result.data.map((t, index) => ({
       day: t.day || index + 1,

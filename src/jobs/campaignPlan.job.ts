@@ -24,6 +24,7 @@ export function defineCampaignPlanJob(agenda:any): void {
       const campaignId = data?.campaignId;
 
       console.log(`[CampaignPlanJob] Starting plan generation for campaign: ${campaignId}`);
+      console.log("Agenda: generate-campaign-plan")
 
       try {
         const campaign = (await Campaign.findById(campaignId).populate("products")) as ICampaign;
