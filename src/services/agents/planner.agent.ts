@@ -36,7 +36,9 @@ export class PlannerAgent {
     }
     console.log(result);
 
-    const themes = result.data.map((t, index) => ({
+    const data = result.data as any;
+    const themeArray = data.contentPlan || data.content_plan || data.themes || data || [];
+    const themes = themeArray.map((t: any, index: number) => ({
       day: t.day || index + 1,
       theme: t.theme,
       focusArea: t.focusArea,

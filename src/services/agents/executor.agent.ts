@@ -68,7 +68,8 @@ export class ExecutorAgent {
       console.error(`Failed to generate posts for theme ${theme.theme}: ${result.error}`);
       return [];
     }
-
+    console.log("[Executor] the result is:", result.data);
+    // const data = result.data as any;
     return result.data.map((post) => ({
       ...post,
       day: post.day || theme.day,
