@@ -70,9 +70,9 @@ agenda.on('ready', () => {
   await agenda.every('30 seconds', 'schedule post');
 
   // Register campaign generation jobs
-  defineCampaignPlanJob();
-  definePostBatchJob();
-  defineFinalizeCampaignJob();
+  defineCampaignPlanJob(agenda);
+  definePostBatchJob(agenda);
+  defineFinalizeCampaignJob(agenda);
 })();
 
 

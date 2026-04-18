@@ -1,6 +1,5 @@
 import { ICampaign } from "../models/campaign.model";
 import { plannerAgent } from "../services/agents/planner.agent";
-import agenda from "../config/agenda";
 import Campaign from "../models/campaign.model";
 
 type Job<T = unknown> = {
@@ -16,7 +15,7 @@ interface CampaignPlanJobData {
   campaignId: string;
 }
 
-export function defineCampaignPlanJob(): void {
+export function defineCampaignPlanJob(agenda:any): void {
   agenda.define(
     "generate-campaign-plan",
     { priority: "high", concurrency: 1 },

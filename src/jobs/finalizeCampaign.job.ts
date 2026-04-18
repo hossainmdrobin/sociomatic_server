@@ -16,7 +16,7 @@ interface FinalizeJobData {
   expectedBatches: number;
 }
 
-export function defineFinalizeCampaignJob(): void {
+export function defineFinalizeCampaignJob(agenda:any): void {
   agenda.define(
     "finalize-campaign",
     { priority: "normal", concurrency: 1 },

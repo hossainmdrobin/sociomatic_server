@@ -1,7 +1,6 @@
 import { ICampaign } from "../models/campaign.model";
 import { executorAgent } from "../services/agents/executor.agent";
 import { Theme } from "../services/agents/planner.agent";
-import agenda from "../config/agenda";
 import Campaign from "../models/campaign.model";
 import { Post } from "../models/post.model";
 
@@ -21,7 +20,7 @@ interface PostBatchJobData {
   totalBatches: number;
 }
 
-export function definePostBatchJob(): void {
+export function definePostBatchJob(agenda:any): void {
   agenda.define(
     "generate-post-batch",
     { priority: "high", concurrency: 5 },
