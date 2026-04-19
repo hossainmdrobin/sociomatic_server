@@ -14,11 +14,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.definePostBatchJob = definePostBatchJob;
 const executor_agent_1 = require("../services/agents/executor.agent");
-const agenda_1 = __importDefault(require("../config/agenda"));
 const campaign_model_1 = __importDefault(require("../models/campaign.model"));
 const post_model_1 = require("../models/post.model");
-function definePostBatchJob() {
-    agenda_1.default.define("generate-post-batch", { priority: "high", concurrency: 5 }, (job) => __awaiter(this, void 0, void 0, function* () {
+function definePostBatchJob(agenda) {
+    agenda.define("generate-post-batch", { priority: "high", concurrency: 5 }, (job) => __awaiter(this, void 0, void 0, function* () {
         const data = job.attrs.data;
         const campaignId = data === null || data === void 0 ? void 0 : data.campaignId;
         const themes = data === null || data === void 0 ? void 0 : data.themes;

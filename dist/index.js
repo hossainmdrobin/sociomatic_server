@@ -70,10 +70,9 @@ agendaConfig_1.default.on('ready', () => {
     (0, postToFacebook_1.default)(agendaConfig_1.default);
     yield agendaConfig_1.default.every('30 seconds', 'schedule post');
     // Register campaign generation jobs
-    (0, campaignPlan_job_1.default)();
-    (0, postBatch_job_1.default)();
-    (0, finalizeCampaign_job_1.default)();
-    console.log("Campaign generation jobs registered");
+    (0, campaignPlan_job_1.default)(agendaConfig_1.default);
+    (0, postBatch_job_1.default)(agendaConfig_1.default);
+    (0, finalizeCampaign_job_1.default)(agendaConfig_1.default);
 }))();
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);

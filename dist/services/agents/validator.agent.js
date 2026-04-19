@@ -27,14 +27,17 @@ class ValidatorAgent {
         return __awaiter(this, void 0, void 0, function* () {
             let result = (0, jsonParser_1.parseJSON)(rawOutput);
             if (result.success && this.validateSchema(result.data, schema)) {
+                console.log("Initial validation successful");
                 return result;
             }
             const cleaned = (0, jsonParser_1.cleanJSONString)(rawOutput);
             result = (0, jsonParser_1.parseJSON)(cleaned);
             if (result.success && this.validateSchema(result.data, schema)) {
+                console.log("Validation successful after cleaning", result.data);
                 return result;
             }
             if (this.config.maxRetries > 0) {
+                console.log("Attempting to fix JSON with LLM");
                 return yield this.fixWithLLM(rawOutput, schema);
             }
             return {

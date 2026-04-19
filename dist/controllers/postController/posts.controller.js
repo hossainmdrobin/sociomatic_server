@@ -19,7 +19,7 @@ const account_model_1 = require("./../../models/account.model");
 const addTextPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const admin = req.user.roll == "admin" ? req.user._id : req.user.admin;
     try {
-        const newPost = new post_model_1.Post(Object.assign(Object.assign({}, req.body), { admin, creator: req.user._id, editor: req.user._id, stage: req.body.stage || "saved" }));
+        const newPost = new post_model_1.Post(Object.assign(Object.assign({}, req.body), { admin, institute: req.user.institute, creator: req.user._id, editor: req.user._id, stage: req.body.stage || "saved" }));
         yield newPost.save();
         res.status(200).json({ message: "Post created successfully", success: true, data: newPost });
     }
@@ -106,7 +106,7 @@ const savePostWithFiles = (req, res) => __awaiter(void 0, void 0, void 0, functi
             images.push(file.path);
     });
     try {
-        const newPost = new post_model_1.Post(Object.assign(Object.assign({}, req.body), { images, videos, admin, creator: req.user._id, editor: req.user._id, stage: req.body.stage || "saved" }));
+        const newPost = new post_model_1.Post(Object.assign(Object.assign({}, req.body), { images, videos, admin, creator: req.user._id, editor: req.user._id, institute: req.user.institute, stage: req.body.stage || "saved" }));
         yield newPost.save();
         res.status(200).json({ message: "Post created successfully", success: true, data: newPost });
     }

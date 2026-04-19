@@ -14,13 +14,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.defineCampaignPlanJob = defineCampaignPlanJob;
 const planner_agent_1 = require("../services/agents/planner.agent");
-const agenda_1 = __importDefault(require("../config/agenda"));
 const campaign_model_1 = __importDefault(require("../models/campaign.model"));
-function defineCampaignPlanJob() {
-    agenda_1.default.define("generate-campaign-plan", { priority: "high", concurrency: 1 }, (job) => __awaiter(this, void 0, void 0, function* () {
+function defineCampaignPlanJob(agenda) {
+    agenda.define("generate-campaign-plan", { priority: "high", concurrency: 1 }, (job) => __awaiter(this, void 0, void 0, function* () {
         const data = job.attrs.data;
         const campaignId = data === null || data === void 0 ? void 0 : data.campaignId;
         console.log(`[CampaignPlanJob] Starting plan generation for campaign: ${campaignId}`);
+        console.log("Agenda: generate-campaign-plan");
         try {
             const campaign = (yield campaign_model_1.default.findById(campaignId).populate("products"));
             if (!campaign) {
@@ -39,7 +39,7 @@ function defineCampaignPlanJob() {
             console.log(`[CampaignPlanJob] Generated ${plan.themes.length} themes for ${plan.totalPosts} posts`);
             const batches = planner_agent_1.plannerAgent.splitIntoBatches(plan.themes, 5);
             for (let i = 0; i < batches.length; i++) {
-                yield agenda_1.default.schedule("now", "generate-post-batch", {
+                yield agenda.schedule("now", "generate-post-batch", {
                     campaignId,
                     themes: batches[i],
                     batchIndex: i,
@@ -47,7 +47,7 @@ function defineCampaignPlanJob() {
                 });
                 console.log(`[CampaignPlanJob] Enqueued batch ${i + 1}/${batches.length}`);
             }
-            yield agenda_1.default.schedule("in 5 minutes", "finalize-campaign", { campaignId, expectedBatches: batches.length });
+            yield agenda.schedule("in 5 minutes", "finalize-campaign", { campaignId, expectedBatches: batches.length });
         }
         catch (error) {
             console.error(`[CampaignPlanJob] Error:`, error);

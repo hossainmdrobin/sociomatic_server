@@ -29,6 +29,7 @@ const createCampaign = (req, res) => __awaiter(void 0, void 0, void 0, function*
         //     creator: req.user._id,
         //     institute: req.user.institute,
         //     account:savedCampaign.account,
+        //     stage:"saved"
         // }))
         // await Post.insertMany(readyPlan);        
         res.status(201).json(savedCampaign);

@@ -56,7 +56,10 @@ class ExecutorAgent {
                 console.error(`Failed to generate posts for theme ${theme.theme}: ${result.error}`);
                 return [];
             }
-            return result.data.map((post) => (Object.assign(Object.assign({}, post), { day: post.day || theme.day, theme: post.theme || theme.theme })));
+            console.log("[Executor] the result is:", result.data);
+            const data = result.data;
+            const postArray = data.posts || [];
+            return postArray.map((post) => (Object.assign(Object.assign({}, post), { day: post.day || theme.day, theme: post.theme || theme.theme })));
         });
     }
     buildPrompt(campaign, theme) {

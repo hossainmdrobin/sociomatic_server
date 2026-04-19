@@ -13,11 +13,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.defineFinalizeCampaignJob = defineFinalizeCampaignJob;
-const agenda_1 = __importDefault(require("../config/agenda"));
 const campaign_model_1 = __importDefault(require("../models/campaign.model"));
 const post_model_1 = require("../models/post.model");
-function defineFinalizeCampaignJob() {
-    agenda_1.default.define("finalize-campaign", { priority: "normal", concurrency: 1 }, (job) => __awaiter(this, void 0, void 0, function* () {
+function defineFinalizeCampaignJob(agenda) {
+    agenda.define("finalize-campaign", { priority: "normal", concurrency: 1 }, (job) => __awaiter(this, void 0, void 0, function* () {
         const data = job.attrs.data;
         const campaignId = data === null || data === void 0 ? void 0 : data.campaignId;
         const expectedBatches = data === null || data === void 0 ? void 0 : data.expectedBatches;

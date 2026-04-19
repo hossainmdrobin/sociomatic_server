@@ -28,7 +28,10 @@ class PlannerAgent {
             if (!result.success || !result.data) {
                 throw new Error(`Failed to generate plan: ${result.error}`);
             }
-            const themes = result.data.map((t, index) => ({
+            console.log(result);
+            const data = result.data;
+            const themeArray = data.contentPlan || data.content_plan || data.themes || data || [];
+            const themes = themeArray.map((t, index) => ({
                 day: t.day || index + 1,
                 theme: t.theme,
                 focusArea: t.focusArea,
