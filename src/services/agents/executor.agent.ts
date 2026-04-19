@@ -69,8 +69,9 @@ export class ExecutorAgent {
       return [];
     }
     console.log("[Executor] the result is:", result.data);
-    // const data = result.data as any;
-    return result.data.map((post) => ({
+    const data = result.data as any;
+    const postArray = data.posts || []
+    return postArray.map((post: any) => ({
       ...post,
       day: post.day || theme.day,
       theme: post.theme || theme.theme,
