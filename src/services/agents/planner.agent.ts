@@ -83,7 +83,7 @@ Generate a content plan with themes for each day. Each theme should be engaging 
 - Storytelling
 
 Return ONLY a valid JSON array with this exact structure:
-[{"day": 1, "theme": "theme description"}, {"day": 2, "theme": "theme description"}]
+[{"day": 1, "theme": "theme description", "product": "mongoose_object_id"}, {"day": 2, "theme": "theme description", "product": "mongoose_object_id"}]
 
 Generate themes for at least ${duration} days to create ${duration * (postsPerDay || 5)}+ posts. Make themes diverse and strategic.`;
   }
