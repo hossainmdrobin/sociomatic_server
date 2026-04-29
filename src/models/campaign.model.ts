@@ -5,7 +5,8 @@ export interface ICampaign extends Document {
     user: mongoose.Types.ObjectId;
     institute: mongoose.Types.ObjectId;
     account: mongoose.Types.ObjectId,
-    language?:string
+    language?:string;
+    summary?:string;
 
     // Core inputs
     goals: string; // e.g. "Increase sales", "Brand awareness"
@@ -143,6 +144,7 @@ const campaignSchema = new Schema<ICampaign>(
         tone: String,
 
         aiModel: String,
+        summary: String,
     },
     { timestamps: true }
 );

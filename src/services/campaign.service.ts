@@ -22,8 +22,14 @@ export class CampaignService {
     await campaign.save();
 
     await agenda.cancel({ "data.campaignId": campaignId });
+    for (let i = 0; i < campaign.duration; i++) {
+      i === 0 ?
+        await agenda.now("generate-campaign-plan", { campaignId, day: i + 1 }) :
+        await agenda.schedule(`in ${(i + 1) * 2} minutes`, "generate-campaign-plan", { campaignId, day: i + 1 });
+      console.log(`Running job for day ${i + 1} of campaign ${campaignId} at ${(i + 1) * 2} minutes`);
+    }
 
-    await agenda.now("generate-campaign-plan", { campaignId });
+    // await agenda.now("generate-campaign-plan", { campaignId });
 
     console.log(`[CampaignService] Started generation for campaign: ${campaignId}`);
   }

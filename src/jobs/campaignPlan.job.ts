@@ -13,15 +13,16 @@ type Job<T = unknown> = {
 
 interface CampaignPlanJobData {
   campaignId: string;
+  day:number
 }
 
-export function defineCampaignPlanJob(agenda:any): void {
+export function defineCampaignPlanJob(agenda: any): void {
   agenda.define(
     "generate-campaign-plan",
     { priority: "high", concurrency: 1 },
     async (job: Job<CampaignPlanJobData>) => {
       const data = job.attrs.data!;
-      const campaignId = data?.campaignId;
+      const { campaignId, day } = data;
 
       console.log(`[CampaignPlanJob] Starting plan generation for campaign: ${campaignId}`);
       console.log("Agenda: generate-campaign-plan")
@@ -41,7 +42,7 @@ export function defineCampaignPlanJob(agenda:any): void {
         campaign.status = "planning";
         await campaign.save();
 
-        const plan = await plannerAgent.createPlan(campaign);
+        const plan = await plannerAgent.createPlan(campaign,day);
 
         campaign.plan = plan.themes as any;
         campaign.expectedPostCount = plan.totalPosts;
