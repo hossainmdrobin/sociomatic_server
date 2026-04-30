@@ -5,35 +5,20 @@ import { ICampaign } from "../../models/campaign.model";
 import { Post } from "../../models/post.model";
 
 export interface GeneratedPost {
-  day: number;
-  theme: string;
   text: string;
-  caption: string;
-  tags: string[];
+  images: string[];
+  videos: string[];
   platform: string;
-  postType: string;
-  images?: string[];
-  videos?: string[];
+  budget: number;
+  scheduledAt: string;
+  tags: string[];
 }
 
-const POSTS_PER_THEME = 5;
-
 export class ExecutorAgent {
-  private postsPerTheme: number;
+  async execute(campaign: ICampaign, theme: Theme): Promise<GeneratedPost[]> {
 
-  constructor(postsPerTheme: number = POSTS_PER_THEME) {
-    this.postsPerTheme = postsPerTheme;
-  }
-
-  async execute(campaign: ICampaign, themes: Theme[]): Promise<GeneratedPost[]> {
-    const allPosts: GeneratedPost[] = [];
-
-    for (const theme of themes) {
-      const posts = await this.generatePostsForTheme(campaign, theme);
-      allPosts.push(...posts);
-    }
-
-    return allPosts;
+    const posts = await this.generatePostsForTheme(campaign, theme);
+    return posts;
   }
 
   private async generatePostsForTheme(
@@ -49,16 +34,15 @@ export class ExecutorAgent {
         type: "array",
         items: {
           type: "object",
+          required: ["text", "platform", "budget", "scheduledAt", "tags"],
           properties: {
-            day: { type: "number" },
-            theme: { type: "string" },
             text: { type: "string" },
-            caption: { type: "string" },
-            tags: { type: "array", items: { type: "string" } },
-            platform: { type: "string" },
-            postType: { type: "string" },
             images: { type: "array", items: { type: "string" } },
             videos: { type: "array", items: { type: "string" } },
+            platform: { type: "string" },
+            budget: { type: "number" },
+            scheduledAt: { type: "string", format: "date-time" },
+            tags: { type: "array", items: { type: "string" } },
           },
         },
       }
@@ -68,21 +52,33 @@ export class ExecutorAgent {
       console.error(`Failed to generate posts for theme ${theme.theme}: ${result.error}`);
       return [];
     }
-    console.log("[Executor] the result is:", result.data);
-    const data = result.data as any;
-    const postArray = data.posts || []
-    return postArray.map((post: any) => ({
-      ...post,
-      day: post.day || theme.day,
-      theme: post.theme || theme.theme,
-    }));
+
+    return result.data;
   }
 
   private buildPrompt(campaign: ICampaign, theme: Theme): string {
-    const { name, goals, tone, platforms } = campaign;
+    const { name, goals, tone, platforms, postsPerDay, startsFrom } = campaign;
     const platformList = (platforms || []).join(", ") || "facebook, instagram, linkedin, twitter";
+    const postCount = postsPerDay || 5;
 
-    return `You are a social media content creator. Generate ${this.postsPerTheme} posts for a campaign.
+    const baseDate = new Date(startsFrom || Date.now());
+    const year = baseDate.getFullYear();
+    const month = String(baseDate.getMonth() + 1).padStart(2, "0");
+    const day = String(baseDate.getDate() + (theme.day - 1)).padStart(2, "0");
+
+    const timeSlots = [
+      "09:00:00.000Z",
+      "11:00:00.000Z",
+      "13:00:00.000Z",
+      "15:00:00.000Z",
+      "17:00:00.000Z",
+    ];
+
+    const scheduledTimes = timeSlots.slice(0, postCount).map((time) =>
+      `${year}-${month}-${day}T${time}`
+    );
+
+    return `You are a social media content creator. Generate ${postCount} posts for a campaign.
 
 Campaign:
 - Name: ${name}
@@ -93,26 +89,33 @@ Campaign:
 
 Current Theme (Day ${theme.day}):
 ${theme.theme}
+${theme.focusArea ? `Focus Area: ${theme.focusArea}` : ""}
 
-Generate ${this.postsPerTheme} diverse posts across different platforms. Mix content types: educational, promotional, engagement, behind_the_scenes, product_showcase, testimonial, etc.
+Generate exactly ${postCount} diverse posts. Each post must have a unique scheduledAt timestamp.
 
-Return ONLY a valid JSON array with this exact structure:
+Return ONLY a valid JSON array. No markdown, no explanations, no code blocks. Use this exact structure:
 [
-{
-  "text": "Check out our latest collection of summer essentials! ☀️ #Fashion #Summer2026",
-  "images": [
-    "https://example.com/images/summer-post-1.jpg",
-    "https://example.com/images/summer-post-2.jpg"
-  ],
-  "videos": ["https://example.com/images/summer-post-2.mp4"],
-  "platform": "facebook",
-  "budget": 50.5,
-  "scheduledAt": "2026-05-01T10:00:00.000Z",
-  "tags": ["summer", "new-arrival"],
-}
+  {
+    "text": "Post body text",
+    "images": [],
+    "videos": [],
+    "platform": "facebook|instagram|linkedin|twitter",
+    "budget": 0,
+    "scheduledAt": "ISO8601_TIMESTAMP",
+    "tags": ["tag1", "tag2"]
+  }
 ]
 
-Make content engaging, platform-specific, and varied. Ensure tags are relevant.`;
+Constraints:
+- text: max 500 characters, engaging and platform-appropriate
+- images: array of image URLs, empty if none
+- videos: array of video URLs, empty if none
+- platform: one of [facebook, instagram, twitter, linkedin]
+- budget: numeric value in USD (0 if not applicable)
+- scheduledAt: must be one of these exact ISO8601 timestamps: ${scheduledTimes.map((t, i) => `${i + 1}. ${t}`).join(", ")}
+- tags: 3-5 relevant hashtags without the # symbol
+
+Ensure scheduledAt matches the provided timestamps exactly, one per post.`;
   }
 
   async savePosts(posts: GeneratedPost[], campaignId: string, adminId: string, instituteId: string, accountId: string): Promise<number> {
@@ -125,11 +128,12 @@ Make content engaging, platform-specific, and varied. Ensure tags are relevant.`
       creator: adminId,
       account: accountId,
       text: post.text,
-      caption: post.caption,
+      caption: "", // caption not in output schema, set empty or derive from text
       tags: post.tags,
       platform: post.platform,
       stage: "draft",
-      postType: post.postType,
+      budget: post.budget,
+      scheduledAt: new Date(post.scheduledAt),
       images: post.images || [],
       videos: post.videos || [],
     }));

@@ -48,7 +48,7 @@ export function definePostGenerationJob(agenda: any): void {
           focusArea: campaignPlanDoc.products?.map((p: any) => p.name || p._id).join(", "),
         };
 
-        const generatedPosts = await executorAgent.execute(campaign, [theme]);
+        const generatedPosts = await executorAgent.execute(campaign,theme);
 
         console.log(`[PostGenerationJob] Generated ${generatedPosts.length} posts`);
 
