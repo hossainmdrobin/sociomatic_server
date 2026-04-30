@@ -97,17 +97,20 @@ ${theme.theme}
 Generate ${this.postsPerTheme} diverse posts across different platforms. Mix content types: educational, promotional, engagement, behind_the_scenes, product_showcase, testimonial, etc.
 
 Return ONLY a valid JSON array with this exact structure:
-[{
-  "day": ${theme.day},
-  "theme": "${theme.theme.replace(/"/g, '\\"')}",
-  "text": "post body text",
-  "caption": "caption text",
-  "tags": ["tag1", "tag2"],
-  "platform": "facebook|instagram|linkedin|twitter",
-  "postType": "text|product_showcase|educational|promotional|engagement|testimonial|behind_the_scenes",
-  "images": [],
-  "videos": []
-}]
+[
+{
+  "text": "Check out our latest collection of summer essentials! ☀️ #Fashion #Summer2026",
+  "images": [
+    "https://example.com/images/summer-post-1.jpg",
+    "https://example.com/images/summer-post-2.jpg"
+  ],
+  "videos": ["https://example.com/images/summer-post-2.mp4"],
+  "platform": "facebook",
+  "budget": 50.5,
+  "scheduledAt": "2026-05-01T10:00:00.000Z",
+  "tags": ["summer", "new-arrival"],
+}
+]
 
 Make content engaging, platform-specific, and varied. Ensure tags are relevant.`;
   }
