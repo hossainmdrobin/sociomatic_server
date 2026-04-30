@@ -24,9 +24,6 @@ export function defineCampaignPlanJob(agenda: any): void {
       const data = job.attrs.data!;
       const { campaignId, day } = data;
 
-      console.log(`[CampaignPlanJob] Starting plan generation for campaign: ${campaignId}`);
-      console.log("Agenda: generate-campaign-plan")
-
       try {
         const campaign = (await Campaign.findById(campaignId).populate("products")) as ICampaign;
 
@@ -35,42 +32,41 @@ export function defineCampaignPlanJob(agenda: any): void {
         }
 
         if (campaign.status === "completed") {
-          console.log(`[CampaignPlanJob] Campaign already completed: ${campaignId}`);
           return;
         }
 
         campaign.status = "planning";
         await campaign.save();
 
-        const plan = await plannerAgent.createPlan(campaign,day);
-
-        campaign.plan = plan.themes as any;
-        campaign.expectedPostCount = plan.totalPosts;
+        const summary = await plannerAgent.createPlan(campaign,day);
+        campaign.summary = summary.summary;
         await campaign.save();
 
-        console.log(`[CampaignPlanJob] Generated ${plan.themes.length} themes for ${plan.totalPosts} posts`);
+        // campaign.plan = plan.themes as any;
+        // campaign.expectedPostCount = plan.totalPosts;
+        // await campaign.save();
 
-        const batches = plannerAgent.splitIntoBatches(plan.themes, 5);
+        // const batches = plannerAgent.splitIntoBatches(plan.themes, 5);
 
-        for (let i = 0; i < batches.length; i++) {
-          await agenda.schedule(
-            "now",
-            "generate-post-batch",
-            {
-              campaignId,
-              themes: batches[i],
-              batchIndex: i,
-              totalBatches: batches.length,
-            }
-          );
-          console.log(`[CampaignPlanJob] Enqueued batch ${i + 1}/${batches.length}`);
-        }
+        // for (let i = 0; i < batches.length; i++) {
+        //   await agenda.schedule(
+        //     "now",
+        //     "generate-post-batch",
+        //     {
+        //       campaignId,
+        //       themes: batches[i],
+        //       batchIndex: i,
+        //       totalBatches: batches.length,
+        //     }
+        //   );
+        //   console.log(`[CampaignPlanJob] Enqueued batch ${i + 1}/${batches.length}`);
+        // }
 
-        await agenda.schedule(
-          "in 5 minutes",
-          "finalize-campaign",
-          { campaignId, expectedBatches: batches.length }
-        );
+        // await agenda.schedule(
+        //   "in 5 minutes",
+        //   "finalize-campaign",
+        //   { campaignId, expectedBatches: batches.length }
+        // );
       } catch (error) {
         console.error(`[CampaignPlanJob] Error:`, error);
 

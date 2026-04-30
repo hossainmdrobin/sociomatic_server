@@ -81,3 +81,59 @@ Notes:
 
 Generate now.`;
 }
+
+// Generating Campaign summary
+export function updateCampaignSummaryPrompt(
+    day: number,
+    previousSummary: string | undefined,
+    todayPlan: {
+        planDescription: string;
+        products: string[];
+        numberOfPost: number;
+    }
+): string {
+    return `You are an AI assistant responsible for maintaining a running summary of a marketing campaign's content strategy.
+
+Your job is to UPDATE the campaign summary by combining:
+1. Previous summary (memory of past days)
+2. Today's newly generated plan
+--------------------
+
+Current Day:
+${day}
+
+---------------------
+Previous Summary:
+${previousSummary || "No previous summary. This is the beginning of the campaign."}
+
+---------------------
+Today's Plan:
+- Description: ${todayPlan.planDescription}
+- Products Used: ${todayPlan.products.join(", ") || "None"}
+- Number of Posts: ${todayPlan.numberOfPost}
+
+---------------------
+Instructions:
+
+- Create an UPDATED summary that includes:
+  • Overall campaign direction
+  • What has been covered so far
+  • How today's plan contributes to progression
+  • Content evolution (e.g., awareness → engagement → conversion)
+
+- Keep it concise but meaningful (150–300 words)
+- Avoid repetition
+- Maintain continuity and narrative flow
+- This summary will be used as memory for future days
+
+---------------------
+Output Rules:
+
+Return ONLY a valid JSON object. No explanation.
+
+{
+  "updatedSummary": "Concise but informative campaign progression summary"
+}
+
+Generate now.`;
+}

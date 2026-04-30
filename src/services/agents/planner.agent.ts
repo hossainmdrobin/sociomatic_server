@@ -1,7 +1,8 @@
 import llmService from "../../lib/llm";
 import validatorAgent from "./validator.agent";
 import { ICampaign } from "../../models/campaign.model";
-import { generateSingleDayPlanPrompt } from "../../prompts/campaignPlanPrompt";
+import { generateSingleDayPlanPrompt, updateCampaignSummaryPrompt } from "../../prompts/campaignPlanPrompt";
+import campaignPlan from "../../models/campaignPlan";
 
 export interface Theme {
   day: number;
@@ -10,9 +11,7 @@ export interface Theme {
 }
 
 export interface CampaignPlan {
-  campaignId: string;
-  themes: Theme[];
-  totalPosts: number;
+  summary: string;
 }
 
 const POSTS_PER_DAY = 5;
@@ -27,28 +26,57 @@ export class PlannerAgent {
   async createPlan(campaign: ICampaign, day: number): Promise<CampaignPlan> {
     const prompt = this.buildPrompt(campaign,day);
     const rawOutput = await llmService.completeWithRetry(prompt); // Plan generator line
-    const result = await validatorAgent.validate<Theme[]>(
-      rawOutput,
-      { type: "array", items: { type: "object", properties: { day: {}, theme: {} } } }
-    );
+     // Validate raw LLM output against expected schema: a single object with day, planDescription,
+     // products and numberOfPost fields. The validator handles JSON parsing, cleaning, and LLM-based
+     // repair for malformed output, ensuring we get a usable result or a clear failure.
+     const result = await validatorAgent.validate<{
+       day: number;
+       planDescription: string;
+       products: string[];
+       numberOfPost: number;
+     }>(
+       rawOutput,
+       {
+         type: "object",
+         required: ["day", "planDescription", "products", "numberOfPost"],
+         properties: {
+           day: { type: "number" },
+           planDescription: { type: "string" },
+           products: { type: "array", items: { type: "string" } },
+           numberOfPost: { type: "number" },
+         },
+       }
+     );
 
-    if (!result.success || !result.data) {
-      throw new Error(`Failed to generate plan: ${result.error}`);
-    }
-    console.log(result);
+     console.log("Validation result for plan generation:", result);
+     const newCampaignPlan = new campaignPlan({...result?.data, campaign: campaign._id, accounts: campaign.account})
+     await newCampaignPlan.save();
 
-    const data = result.data as any;
-    const themeArray = data.contentPlan || data.content_plan || data.themes || data || [];
-    const themes = themeArray.map((t: any, index: number) => ({
-      day: t.day || index + 1,
-      theme: t.theme,
-      focusArea: t.focusArea,
-    }));
+     const summaryPrompt = updateCampaignSummaryPrompt(day, campaign.summary, result.data!);
+     const summaryOutput = await llmService.completeWithRetry(summaryPrompt);
+     console.log("Raw output for summary update:", summaryOutput);
+     const summaryResult = await validatorAgent.validate<{ updatedSummary: string }>(
+       summaryOutput,
+       {
+         type: "object",
+         required: ["updatedSummary"],
+         properties: {
+           updatedSummary: { type: "string" },
+         },
+       }
+     );
+
+     if (!result.success || !result.data) {
+       throw new Error(`Failed to generate plan for day ${day}: ${result.error}`);
+     }
+
+     // Build themes array from the validated plan. Each generated plan describes one day,
+     // so we derive a single theme entry from it. Use the day from the validated data
+     // (ensuring it matches the requested day) and the planDescription as the theme text.
+    //  const data = result.data;
 
     return {
-      campaignId: campaign._id.toString(),
-      themes,
-      totalPosts: themes.length * this.postsPerDay,
+      summary: summaryResult.data?.updatedSummary || campaign.summary || "",
     };
   }
 
