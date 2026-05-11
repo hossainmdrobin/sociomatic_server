@@ -132,8 +132,9 @@ Output Rules:
 Return ONLY a valid JSON object. No explanation.
 
 {
-  "updatedSummary": "Concise but informative campaign progression summary"
+  "updatedSummary": "Concise but informative campaign progression summary" 
 }
+  updatedSummary must be string and can have multiple paragraphs.
 
 Generate now.`;
 }

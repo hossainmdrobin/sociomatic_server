@@ -26,7 +26,7 @@ import { publishPost } from "./jobs/publishPost";
 import defineCampaignPlanJob from "./jobs/campaignPlan.job";
 import definePostBatchJob from "./jobs/postBatch.job";
 import defineFinalizeCampaignJob from "./jobs/finalizeCampaign.job";
-import definePostGenerationJob from "./jobs/postGeneration.job";
+import definePostGenerationJob from "./jobs/postGenerationFromPlan.job";
 
 dotenv.config();
 
@@ -72,7 +72,7 @@ agenda.on('ready', () => {
 
    // Register campaign generation jobs
    defineCampaignPlanJob(agenda);
-   definePostBatchJob(agenda);
+  //  definePostBatchJob(agenda);
    defineFinalizeCampaignJob(agenda);
    definePostGenerationJob(agenda);
 })();

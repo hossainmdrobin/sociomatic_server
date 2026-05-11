@@ -15,7 +15,7 @@ type Job<T = unknown> = {
 
 interface PostBatchJobData {
   campaignId: string;
-  themes: Theme[];
+  themes: Theme;
   batchIndex: number;
   totalBatches: number;
 }

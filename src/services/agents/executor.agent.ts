@@ -26,6 +26,7 @@ export class ExecutorAgent {
     theme: Theme
   ): Promise<GeneratedPost[]> {
     const prompt = this.buildPrompt(campaign, theme);
+    console.log(`[ExecutorAgent] Generated prompt: ${prompt}`);
     const rawOutput = await llmService.completeWithRetry(prompt);
 
     const result = await validatorAgent.validate<GeneratedPost[]>(
@@ -49,7 +50,7 @@ export class ExecutorAgent {
     );
 
     if (!result.success || !result.data) {
-      console.error(`Failed to generate posts for theme ${theme.theme}: ${result.error}`);
+      // console.error(`Failed to generate posts for theme ${theme.theme}: ${result.error}`);
       return [];
     }
 
@@ -118,15 +119,14 @@ Constraints:
 Ensure scheduledAt matches the provided timestamps exactly, one per post.`;
   }
 
-  async savePosts(posts: GeneratedPost[], campaignId: string, adminId: string, instituteId: string, accountId: string): Promise<number> {
+  async savePosts(posts: GeneratedPost[], campaign: ICampaign): Promise<number> {
     if (posts.length === 0) return 0;
 
     const postDocuments = posts.map((post) => ({
-      campaign: campaignId,
-      admin: adminId,
-      institute: instituteId,
-      creator: adminId,
-      account: accountId,
+      campaign: campaign._id,
+      institute: campaign.institute.toString(),
+      creator: campaign.user.toString(),
+      account: campaign.account?.toString(),
       text: post.text,
       caption: "", // caption not in output schema, set empty or derive from text
       tags: post.tags,

@@ -41,6 +41,7 @@ export function defineCampaignPlanJob(agenda: any): void {
         const summary = await plannerAgent.createPlan(campaign,day);
         campaign.summary = summary.summary;
         await campaign.save();
+        agenda.schedule("in 4 minutes", "generate-post-from-plan", { campaignPlanId: summary.planId });
 
         // campaign.plan = plan.themes as any;
         // campaign.expectedPostCount = plan.totalPosts;

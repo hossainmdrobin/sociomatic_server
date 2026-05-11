@@ -50,7 +50,7 @@ export function definePostGenerationJob(agenda: any): void {
 
         const generatedPosts = await executorAgent.execute(campaign,theme);
 
-        console.log(`[PostGenerationJob] Generated ${generatedPosts.length} posts`);
+        console.log(`[PostGenerationJob] Generated: ${generatedPosts}`);
 
         const accountId = campaignPlanDoc.accounts?.[0]?.toString() || campaign.account?.toString();
         if (!accountId) {
@@ -59,10 +59,7 @@ export function definePostGenerationJob(agenda: any): void {
 
         const savedCount = await executorAgent.savePosts(
           generatedPosts,
-          campaign._id.toString(),
-          campaign.user.toString(),
-          campaign.institute.toString(),
-          accountId
+          campaign
         );
 
         console.log(`[PostGenerationJob] Saved ${savedCount} posts to database`);

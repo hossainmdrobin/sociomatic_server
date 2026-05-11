@@ -12,6 +12,7 @@ export interface Theme {
 
 export interface CampaignPlan {
   summary: string;
+  planId:string;
 }
 
 const POSTS_PER_DAY = 5;
@@ -48,13 +49,11 @@ export class PlannerAgent {
        }
      );
 
-     console.log("Validation result for plan generation:", result);
      const newCampaignPlan = new campaignPlan({...result?.data, campaign: campaign._id, accounts: campaign.account})
      await newCampaignPlan.save();
 
      const summaryPrompt = updateCampaignSummaryPrompt(day, campaign.summary, result.data!);
      const summaryOutput = await llmService.completeWithRetry(summaryPrompt);
-     console.log("Raw output for summary update:", summaryOutput);
      const summaryResult = await validatorAgent.validate<{ updatedSummary: string }>(
        summaryOutput,
        {
@@ -77,6 +76,7 @@ export class PlannerAgent {
 
     return {
       summary: summaryResult.data?.updatedSummary || campaign.summary || "",
+      planId: newCampaignPlan._id.toString(),
     };
   }
 
