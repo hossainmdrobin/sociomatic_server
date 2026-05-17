@@ -52,10 +52,6 @@ app.get("/", (req: Request, res: Response) => {
 
 connectDB();
 
-// agenda.define("agenda running", () => {
-//   console.log("Agenda is running");
-// });
-
 // Ensure the agenda is connected to the database before starting
 agenda.on('ready', () => {
   console.log("Agenda is ready");
