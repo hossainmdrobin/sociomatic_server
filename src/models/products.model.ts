@@ -16,6 +16,7 @@ export interface IProduct extends Document {
     brand?: string
     stock?: number
     status: "active" | "inactive"
+    embedding?: number[]
 }
 
 const ProductSchema = new Schema<IProduct>(
@@ -35,6 +36,12 @@ const ProductSchema = new Schema<IProduct>(
         brand: { type: String, },
         stock: { type: Number, default: 0, },
         status: { type: String, enum: ["active", "inactive"], default: "active", },
+        // models/Product.ts — add this one field
+        embedding: {
+            type: [Number],
+            default: undefined,
+            select: false,   // never returned in normal API queries
+        }
     },
     {
         timestamps: true,

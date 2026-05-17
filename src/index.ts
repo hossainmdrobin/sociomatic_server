@@ -27,6 +27,7 @@ import defineCampaignPlanJob from "./jobs/campaignPlan.job";
 import definePostBatchJob from "./jobs/postBatch.job";
 import defineFinalizeCampaignJob from "./jobs/finalizeCampaign.job";
 import definePostGenerationJob from "./jobs/postGenerationFromPlan.job";
+import { testGraphLangAgent } from "./Test/GraphLangAgent";
 
 dotenv.config();
 
@@ -51,7 +52,7 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 connectDB();
-
+testGraphLangAgent()
 // Ensure the agenda is connected to the database before starting
 agenda.on('ready', () => {
   console.log("Agenda is ready");
