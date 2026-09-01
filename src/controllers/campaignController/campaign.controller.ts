@@ -1,25 +1,32 @@
 import { Request, Response } from "express";
 import Campaign, { ICampaign } from "../../models/campaign.model";
-import { generatePlan } from "./helpers";
 import { Post } from "../../models/post.model";
 import campaignService from "../../services/campaign.service";
 
 export const createCampaign = async (req: Request, res: Response): Promise<void> => {
     try {
-        const campaign = new Campaign({...req.body, user: req.user._id,institute: req.user.institute} as ICampaign);
-        const savedCampaign = await campaign.save();
-        // const plan = await generatePlan(String(savedCampaign._id));
-         await campaignService.startGeneration(String(savedCampaign._id));
-        // const readyPlan = plan.map((p)=>({
-        //     ...p,
-        //     campaign: savedCampaign._id,
-        //     admin: req.user._id,
-        //     creator: req.user._id,
-        //     institute: req.user.institute,
-        //     account:savedCampaign.account,
-        // }))
+        const campaignData = {
+            ...req.body,
+            user: req.user?._id ?? req.body.user,
+            institute: req.user?.institute ?? req.body.institute,
+            account: req.user?.account ?? req.body.account,
+            status: req.body.status ?? "planning",
+            startsFrom: req.body.startsFrom ? new Date(req.body.startsFrom) : undefined,
+            platforms: Array.isArray(req.body.platforms)
+                ? req.body.platforms
+                : req.body.platforms
+                    ? [req.body.platforms]
+                    : [],
+            products: Array.isArray(req.body.products)
+                ? req.body.products
+                : req.body.productIds ?? [],
+        } as ICampaign;
 
-        // await Post.insertMany(readyPlan);        
+        const campaign = new Campaign(campaignData);
+        const savedCampaign = await campaign.save();
+
+        await campaignService.startGeneration(String(savedCampaign._id));
+
         res.status(201).json(savedCampaign);
     } catch (error) {
         console.log(error)

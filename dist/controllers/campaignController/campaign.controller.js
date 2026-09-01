@@ -17,20 +17,18 @@ const campaign_model_1 = __importDefault(require("../../models/campaign.model"))
 const post_model_1 = require("../../models/post.model");
 const campaign_service_1 = __importDefault(require("../../services/campaign.service"));
 const createCampaign = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b, _c, _d, _e, _f, _g, _h;
     try {
-        const campaign = new campaign_model_1.default(Object.assign(Object.assign({}, req.body), { user: req.user._id, institute: req.user.institute }));
+        const campaignData = Object.assign(Object.assign({}, req.body), { user: (_b = (_a = req.user) === null || _a === void 0 ? void 0 : _a._id) !== null && _b !== void 0 ? _b : req.body.user, institute: (_d = (_c = req.user) === null || _c === void 0 ? void 0 : _c.institute) !== null && _d !== void 0 ? _d : req.body.institute, account: (_f = (_e = req.user) === null || _e === void 0 ? void 0 : _e.account) !== null && _f !== void 0 ? _f : req.body.account, status: (_g = req.body.status) !== null && _g !== void 0 ? _g : "planning", startsFrom: req.body.startsFrom ? new Date(req.body.startsFrom) : undefined, platforms: Array.isArray(req.body.platforms)
+                ? req.body.platforms
+                : req.body.platforms
+                    ? [req.body.platforms]
+                    : [], products: Array.isArray(req.body.products)
+                ? req.body.products
+                : (_h = req.body.productIds) !== null && _h !== void 0 ? _h : [] });
+        const campaign = new campaign_model_1.default(campaignData);
         const savedCampaign = yield campaign.save();
-        // const plan = await generatePlan(String(savedCampaign._id));
         yield campaign_service_1.default.startGeneration(String(savedCampaign._id));
-        // const readyPlan = plan.map((p)=>({
-        //     ...p,
-        //     campaign: savedCampaign._id,
-        //     admin: req.user._id,
-        //     creator: req.user._id,
-        //     institute: req.user.institute,
-        //     account:savedCampaign.account,
-        // }))
-        // await Post.insertMany(readyPlan);        
         res.status(201).json(savedCampaign);
     }
     catch (error) {
