@@ -9,11 +9,11 @@ export const addAccount = async (req: Request, res: Response) => {
     const { socialId, token } = req.body;
     try {
 
-        const existingAccount = await Account.findOne({ socialId });
+        // const existingAccount = await Account.findOne({ socialId });
 
-        if (existingAccount) {
-            return res.status(400).json({ message: "Account Already exists", success: false, data: {} });
-        }
+        // if (existingAccount) {
+        //     return res.status(400).json({ message: "Account Already exists", success: false, data: {} });
+        // }
         req.body.addedBy = req.user._id;
         req.body.tokenExpires = new Date(Date.now() + 59 * 24 * 3600 * 1000);
         const newAccount = new Account({ ...req.body, institute });
