@@ -3,6 +3,7 @@
 ========================================================= */
 
 import { getProducts } from "./products.tools";
+import { createPost, updatePostStage } from "./post.tools";
 
 export const creativeDirector = {
   name: "creative_director",
@@ -26,5 +27,5 @@ For every post determine:
 The creative must support the marketing objective.
 `,
 
-  tools: [getProducts],
+  tools: [getProducts, createPost, updatePostStage],
 };

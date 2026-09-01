@@ -6,6 +6,7 @@ import { getSocialAnalytics } from "./analytics.tools";
 import { getPreviousCampaigns } from "./campaign.tools";
 import { getProducts } from "./products.tools";
 import { getPlatformRules } from "./socialmedia.tools";
+import { createPost, updatePostStage } from "./post.tools";
 
 export const campaignStrategist = {
   name: "campaign_strategist",
@@ -43,5 +44,7 @@ Focus on achieving the campaign goal.
     getPreviousCampaigns,
     getSocialAnalytics,
     getPlatformRules,
+    createPost,
+    updatePostStage,
   ],
 };

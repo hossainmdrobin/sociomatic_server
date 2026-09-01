@@ -16,10 +16,10 @@ const addAccount = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     const { institute } = req.user;
     const { socialId, token } = req.body;
     try {
-        const existingAccount = yield account_model_1.Account.findOne({ socialId });
-        if (existingAccount) {
-            return res.status(400).json({ message: "Account Already exists", success: false, data: {} });
-        }
+        // const existingAccount = await Account.findOne({ socialId });
+        // if (existingAccount) {
+        //     return res.status(400).json({ message: "Account Already exists", success: false, data: {} });
+        // }
         req.body.addedBy = req.user._id;
         req.body.tokenExpires = new Date(Date.now() + 59 * 24 * 3600 * 1000);
         const newAccount = new account_model_1.Account(Object.assign(Object.assign({}, req.body), { institute }));

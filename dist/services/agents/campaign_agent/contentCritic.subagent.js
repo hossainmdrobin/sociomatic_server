@@ -4,6 +4,7 @@
 ========================================================= */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.contentCritic = void 0;
+const post_tools_1 = require("./post.tools");
 exports.contentCritic = {
     name: "content_critic",
     description: "Reviews generated content for quality and correctness.",
@@ -31,4 +32,5 @@ score: number
 problems: string[]
 suggestions: string[]
 `,
+    tools: [post_tools_1.createPost, post_tools_1.updatePostStage],
 };

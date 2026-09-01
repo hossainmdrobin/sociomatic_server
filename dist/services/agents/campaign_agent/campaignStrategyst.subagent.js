@@ -8,6 +8,7 @@ const analytics_tools_1 = require("./analytics.tools");
 const campaign_tools_1 = require("./campaign.tools");
 const products_tools_1 = require("./products.tools");
 const socialmedia_tools_1 = require("./socialmedia.tools");
+const post_tools_1 = require("./post.tools");
 exports.campaignStrategist = {
     name: "campaign_strategist",
     description: "Creates the overall marketing strategy for the campaign.",
@@ -40,5 +41,7 @@ Focus on achieving the campaign goal.
         campaign_tools_1.getPreviousCampaigns,
         analytics_tools_1.getSocialAnalytics,
         socialmedia_tools_1.getPlatformRules,
+        post_tools_1.createPost,
+        post_tools_1.updatePostStage,
     ],
 };

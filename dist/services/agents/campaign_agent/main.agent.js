@@ -8,6 +8,7 @@ const products_tools_1 = require("./products.tools");
 const campaign_tools_1 = require("./campaign.tools");
 const analytics_tools_1 = require("./analytics.tools");
 const socialmedia_tools_1 = require("./socialmedia.tools");
+const post_tools_1 = require("./post.tools");
 // IMPORTING SUBAGENTS
 const productAnalyst_subagent_1 = require("./productAnalyst.subagent");
 const campaignStrategyst_subagent_1 = require("./campaignStrategyst.subagent");
@@ -142,6 +143,8 @@ validation
         campaign_tools_1.getPreviousCampaigns,
         socialmedia_tools_1.getPlatformRules,
         analytics_tools_1.getSocialAnalytics,
+        post_tools_1.createPost,
+        post_tools_1.updatePostStage,
     ],
     subagents: [
         productAnalyst_subagent_1.productAnalyst,

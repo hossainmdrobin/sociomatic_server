@@ -5,6 +5,7 @@ import { getProducts } from "./products.tools";
 import { getPreviousCampaigns } from "./campaign.tools";
 import { getSocialAnalytics } from "./analytics.tools";
 import { getPlatformRules } from "./socialmedia.tools";
+import { createPost, updatePostStage } from "./post.tools";
 
 // IMPORTING SUBAGENTS
 import { productAnalyst } from "./productAnalyst.subagent";
@@ -172,6 +173,8 @@ validation
     getPreviousCampaigns,
     getPlatformRules,
     getSocialAnalytics,
+    createPost,
+    updatePostStage,
   ],
 
   subagents: [

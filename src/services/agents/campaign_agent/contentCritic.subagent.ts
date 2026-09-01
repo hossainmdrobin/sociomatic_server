@@ -2,6 +2,8 @@
    SUB AGENT: CONTENT CRITIC
 ========================================================= */
 
+import { createPost, updatePostStage } from "./post.tools";
+
 export const contentCritic = {
   name: "content_critic",
 
@@ -32,4 +34,5 @@ score: number
 problems: string[]
 suggestions: string[]
 `,
+  tools: [createPost, updatePostStage],
 };

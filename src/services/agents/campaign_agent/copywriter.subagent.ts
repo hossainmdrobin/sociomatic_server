@@ -4,6 +4,7 @@
 
 import { getProducts } from "./products.tools";
 import { getPlatformRules } from "./socialmedia.tools";
+import { createPost, updatePostStage } from "./post.tools";
 
 export const copywriter = {
   name: "copywriter",
@@ -32,5 +33,5 @@ Rules:
 - Never invent discounts or prices
 `,
 
-  tools: [getProducts, getPlatformRules],
+  tools: [getProducts, getPlatformRules, createPost, updatePostStage],
 };
