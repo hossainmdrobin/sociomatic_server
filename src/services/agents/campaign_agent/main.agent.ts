@@ -28,21 +28,29 @@ const model = new ChatGroq({
 ========================================================= */
 
 export const campaignInputSchema = z.object({
-  productIds: z.array(z.string()).min(1),
+  name: z.string().min(3).describe("Campaign name used in the database."),
 
-  startDate: z.string(),
+  instituteId: z.string().min(1).optional().describe("Institute that owns the campaign."),
 
-  durationDays: z.number().int().positive(),
+  userId: z.string().min(1).optional().describe("Admin or user creating the campaign."),
 
-  goal: z.enum([
-    "sales",
-    "awareness",
-    "engagement",
-    "traffic",
-    "product_launch",
-  ]),
+  accountId: z.string().min(1).optional().describe("Account linked to the campaign."),
 
-  postsPerDay: z.number().int().positive(),
+  productIds: z.array(z.string()).min(1).describe("Products selected for the campaign."),
+
+  goals: z.string().min(3).describe("Primary campaign objective, such as increase sales or brand awareness."),
+
+  description: z.string().optional().describe("Optional campaign summary or notes."),
+
+  startsFrom: z.string().describe("Campaign start date in ISO format."),
+
+  duration: z.number().int().positive().describe("Campaign length in days."),
+
+  postsPerDay: z.number().int().positive().describe("How many posts per day to generate."),
+
+  language: z.string().optional().describe("Content language, for example en, es, or tr."),
+
+  tone: z.string().optional().describe("Brand tone, for example professional, playful, luxury."),
 
   postTypes: z.array(
     z.enum([
@@ -54,15 +62,18 @@ export const campaignInputSchema = z.object({
       "styling",
       "behind_the_scenes",
     ])
-  ),
+  ).min(1).optional().describe("Allowed content formats for the calendar."),
 
   platforms: z.array(
     z.enum([
       "facebook",
       "instagram",
       "tiktok",
+      "twitter",
+      "linkedin",
+      "youtube",
     ])
-  ),
+  ).min(1).describe("Platforms where the campaign will be published."),
 });
 
 

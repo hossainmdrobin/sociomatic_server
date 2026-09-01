@@ -26,17 +26,18 @@ const model = new groq_1.ChatGroq({
    INPUT SCHEMA
 ========================================================= */
 exports.campaignInputSchema = zod_1.z.object({
-    productIds: zod_1.z.array(zod_1.z.string()).min(1),
-    startDate: zod_1.z.string(),
-    durationDays: zod_1.z.number().int().positive(),
-    goal: zod_1.z.enum([
-        "sales",
-        "awareness",
-        "engagement",
-        "traffic",
-        "product_launch",
-    ]),
-    postsPerDay: zod_1.z.number().int().positive(),
+    name: zod_1.z.string().min(3).describe("Campaign name used in the database."),
+    instituteId: zod_1.z.string().min(1).optional().describe("Institute that owns the campaign."),
+    userId: zod_1.z.string().min(1).optional().describe("Admin or user creating the campaign."),
+    accountId: zod_1.z.string().min(1).optional().describe("Account linked to the campaign."),
+    productIds: zod_1.z.array(zod_1.z.string()).min(1).describe("Products selected for the campaign."),
+    goals: zod_1.z.string().min(3).describe("Primary campaign objective, such as increase sales or brand awareness."),
+    description: zod_1.z.string().optional().describe("Optional campaign summary or notes."),
+    startsFrom: zod_1.z.string().describe("Campaign start date in ISO format."),
+    duration: zod_1.z.number().int().positive().describe("Campaign length in days."),
+    postsPerDay: zod_1.z.number().int().positive().describe("How many posts per day to generate."),
+    language: zod_1.z.string().optional().describe("Content language, for example en, es, or tr."),
+    tone: zod_1.z.string().optional().describe("Brand tone, for example professional, playful, luxury."),
     postTypes: zod_1.z.array(zod_1.z.enum([
         "product_showcase",
         "educational",
@@ -45,12 +46,15 @@ exports.campaignInputSchema = zod_1.z.object({
         "social_proof",
         "styling",
         "behind_the_scenes",
-    ])),
+    ])).min(1).optional().describe("Allowed content formats for the calendar."),
     platforms: zod_1.z.array(zod_1.z.enum([
         "facebook",
         "instagram",
         "tiktok",
-    ])),
+        "twitter",
+        "linkedin",
+        "youtube",
+    ])).min(1).describe("Platforms where the campaign will be published."),
 });
 /* =========================================================
    SUB AGENT: CONTENT PLANNER
