@@ -1,6 +1,7 @@
+import "dotenv/config";
+
 // Third party libraries
 import express, { Request, Response } from "express";
-import dotenv from "dotenv";
 import cors from "cors";
 import morgan from "morgan";
 
@@ -26,8 +27,6 @@ import { publishPost } from "./jobs/publishPost";
 import defineCampaignPlanJob from "./jobs/campaignPlan.job";
 import definePostBatchJob from "./jobs/postBatch.job";
 import defineFinalizeCampaignJob from "./jobs/finalizeCampaign.job";
-
-dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;

@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.campaignAgent = exports.campaignInputSchema = void 0;
 const deepagents_1 = require("deepagents");
 const zod_1 = require("zod");
-const groq_1 = require("@langchain/groq");
+const groqModels_1 = require("../../../lib/groqModels");
 const products_tools_1 = require("./products.tools");
 const campaign_tools_1 = require("./campaign.tools");
 const analytics_tools_1 = require("./analytics.tools");
@@ -18,11 +18,6 @@ const contentCritic_subagent_1 = require("./contentCritic.subagent");
 /* =========================================================
    LLM
 ========================================================= */
-const model = new groq_1.ChatGroq({
-    model: process.env.GROQ_MODEL,
-    temperature: 0.4,
-    apiKey: process.env.GROQ_API_KEY,
-});
 /* =========================================================
    INPUT SCHEMA
 ========================================================= */
@@ -31,7 +26,7 @@ exports.campaignInputSchema = zod_1.z.object({
     instituteId: zod_1.z.string().min(1).optional().describe("Institute that owns the campaign."),
     userId: zod_1.z.string().min(1).optional().describe("Admin or user creating the campaign."),
     accountId: zod_1.z.string().min(1).optional().describe("Account linked to the campaign."),
-    productIds: zod_1.z.array(zod_1.z.string()).min(1).describe("Products selected for the campaign."),
+    products: zod_1.z.array(zod_1.z.string()).min(1).describe("Products selected for the campaign."),
     goals: zod_1.z.string().min(3).describe("Primary campaign objective, such as increase sales or brand awareness."),
     description: zod_1.z.string().optional().describe("Optional campaign summary or notes."),
     startsFrom: zod_1.z.string().describe("Campaign start date in ISO format."),
@@ -91,10 +86,10 @@ Only create the content plan.
     ],
 };
 /* =========================================================
-   MAIN DEEP AGENT
+  MAIN DEEP AGENT
 ========================================================= */
 exports.campaignAgent = (0, deepagents_1.createDeepAgent)({
-    model,
+    model: (0, groqModels_1.createGroqModel)(0.4),
     systemPrompt: `
 You are the Campaign Manager AI.
 

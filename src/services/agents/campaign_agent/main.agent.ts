@@ -1,6 +1,6 @@
 import { createDeepAgent } from "deepagents";
 import { z } from "zod";
-import { ChatGroq } from "@langchain/groq";
+import { createGroqModel } from "../../../lib/groqModels";
 import { getProducts } from "./products.tools";
 import { getPreviousCampaigns } from "./campaign.tools";
 import { getSocialAnalytics } from "./analytics.tools";
@@ -17,12 +17,6 @@ import { contentCritic } from "./contentCritic.subagent";
 /* =========================================================
    LLM
 ========================================================= */
-
-const model = new ChatGroq({
-  model: process.env.GROQ_MODEL!,
-  temperature: 0.4,
-  apiKey: process.env.GROQ_API_KEY,
-});
 
 /* =========================================================
    INPUT SCHEMA
@@ -118,11 +112,11 @@ Only create the content plan.
 };
 
 /* =========================================================
-   MAIN DEEP AGENT
+  MAIN DEEP AGENT
 ========================================================= */
 
 export const campaignAgent = createDeepAgent({
-  model,
+  model: createGroqModel(0.4),
 
   systemPrompt: `
 You are the Campaign Manager AI.

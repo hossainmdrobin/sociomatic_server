@@ -1,6 +1,6 @@
 import { createDeepAgent } from "deepagents";
-import { ChatGroq } from "@langchain/groq";
 import { z } from "zod";
+import { createGroqModel } from "../../../lib/groqModels";
 
 import { extractProductFromUrl } from "./urlExtractor.tool";
 import { productFetcher } from "./productFetcher.subagent";
@@ -9,12 +9,6 @@ import { productValidator } from "./productValidator.subagent";
 /* =========================================================
    LLM
 ========================================================= */
-
-const model = new ChatGroq({
-  model: process.env.GROQ_MODEL!,
-  temperature: 0.3,
-  apiKey: process.env.GROQ_API_KEY,
-});
 
 /* =========================================================
    INPUT SCHEMA
@@ -27,11 +21,11 @@ export const productInputSchema = z.object({
 });
 
 /* =========================================================
-   MAIN DEEP AGENT
+  MAIN DEEP AGENT
 ========================================================= */
 
 export const productAgent = createDeepAgent({
-  model,
+  model: createGroqModel(0.3),
 
   systemPrompt: `
 You are the Product Extraction Agent.

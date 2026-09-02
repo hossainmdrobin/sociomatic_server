@@ -2,19 +2,14 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.productAgent = exports.productInputSchema = void 0;
 const deepagents_1 = require("deepagents");
-const groq_1 = require("@langchain/groq");
 const zod_1 = require("zod");
+const groqModels_1 = require("../../../lib/groqModels");
 const urlExtractor_tool_1 = require("./urlExtractor.tool");
 const productFetcher_subagent_1 = require("./productFetcher.subagent");
 const productValidator_subagent_1 = require("./productValidator.subagent");
 /* =========================================================
    LLM
 ========================================================= */
-const model = new groq_1.ChatGroq({
-    model: process.env.GROQ_MODEL,
-    temperature: 0.3,
-    apiKey: process.env.GROQ_API_KEY,
-});
 /* =========================================================
    INPUT SCHEMA
 ========================================================= */
@@ -24,10 +19,10 @@ exports.productInputSchema = zod_1.z.object({
     uploadedBy: zod_1.z.string(),
 });
 /* =========================================================
-   MAIN DEEP AGENT
+  MAIN DEEP AGENT
 ========================================================= */
 exports.productAgent = (0, deepagents_1.createDeepAgent)({
-    model,
+    model: (0, groqModels_1.createGroqModel)(0.3),
     systemPrompt: `
 You are the Product Extraction Agent.
 
