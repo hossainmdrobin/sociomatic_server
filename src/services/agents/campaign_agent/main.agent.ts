@@ -37,7 +37,7 @@ export const campaignInputSchema = z.object({
 
   accountId: z.string().min(1).optional().describe("Account linked to the campaign."),
 
-  productIds: z.array(z.string()).min(1).describe("Products selected for the campaign."),
+  products: z.array(z.string()).min(1).describe("Products selected for the campaign."),
 
   goals: z.string().min(3).describe("Primary campaign objective, such as increase sales or brand awareness."),
 

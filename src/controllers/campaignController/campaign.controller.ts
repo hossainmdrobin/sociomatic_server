@@ -5,6 +5,7 @@ import { campaignAgent, campaignInputSchema } from "./../../services/agents/camp
 
 export const createCampaign = async (req: Request, res: Response): Promise<void> => {
     try {
+        // console.log(req.body);
         const campaignData = {
             ...req.body,
             user: req.user?._id ?? req.body.user,
@@ -24,21 +25,18 @@ export const createCampaign = async (req: Request, res: Response): Promise<void>
 
         const campaign = new Campaign(campaignData);
         const savedCampaign = await campaign.save();
-        const input = campaignInputSchema.parse(campaignData);
+        const input = campaignInputSchema.parse({ ...campaignData, platforms: ["facebook"], startsFrom: String(campaignData.startsFrom) });
 
         const result = await campaignAgent.invoke({
             messages: [
                 {
                     role: "user",
                     content: `
-Create a marketing campaign using these requirements:
-
-${JSON.stringify(input, null, 2)}
-          `,
+                    Create a marketing campaign using these requirements:
+                    ${JSON.stringify({ ...input, platforms: ["facebook"], startsFrom: String(input.startsFrom) }, null, 2)}`,
                 },
             ],
         });
-
         console.log("Campaign Agent Result:", result);
 
         res.status(201).json(savedCampaign);
