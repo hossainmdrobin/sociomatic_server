@@ -17,6 +17,8 @@ const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const cors_1 = __importDefault(require("cors"));
 const morgan_1 = __importDefault(require("morgan"));
+// Swagger
+const swagger_1 = require("./config/swagger");
 // routes imports
 const auth_routes_1 = __importDefault(require("./routes/auth.routes"));
 const accouts_routes_1 = __importDefault(require("./routes/accounts/accouts.routes"));
@@ -42,6 +44,8 @@ const PORT = process.env.PORT || 5000;
 app.use(express_1.default.json());
 app.use((0, cors_1.default)());
 app.use((0, morgan_1.default)("dev"));
+// Setup Swagger
+(0, swagger_1.setupSwagger)(app);
 app.use("/api/auth", auth_routes_1.default);
 app.use("/api/accounts", accouts_routes_1.default);
 app.use("/api/posts", posts_routes_1.default);
